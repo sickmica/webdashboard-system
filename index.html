@@ -2912,6 +2912,7 @@
                                 <option value="Purchasing">Purchasing Department</option>
                                 <option value="Import/Export">Import/Export</option>
                                 <option value="Operations">Operations</option>
+                                 <option value="QA">Quality Assurance</option>
                                 <option value="Sales">Sales & Marketing</option>
                                 <option value="Finance">Finance</option>
                                 <option value="HR">Human Resources</option>
@@ -3464,6 +3465,32 @@
                 }
             });
         }
+
+        function updatePurposeDropdownOptions() {
+            const purposeDropdown = document.getElementById('purposeDropdown');
+            const purposeInput = document.getElementById('outboundPurpose');
+            const itemSelect = document.getElementById('outboundItem');
+            if (!purposeDropdown || !itemSelect) return;
+            const itemId = itemSelect.value;
+            const item = items.find(i => i.id === itemId);
+            const isYubikey = isAttachmentRequiredItem(item);
+            const baseOptions = [
+                { value: '调拨出库', label: '🔄 调拨出库' },
+                { value: '借用出库', label: '⏳ 借用出库' },
+                { value: '领用出库', label: '📋 领用出库' },
+                { value: '维修出库', label: '🛠️ 维修出库' },
+                { value: '报废出库', label: '🗑️ 报废出库' },
+            ];
+            const yubikeyOnly = [
+                { value: '新员工入职', label: '📥 新员工入职' },
+            ];
+            const list = isYubikey ? [...yubikeyOnly, ...baseOptions] : baseOptions;
+            purposeDropdown.innerHTML = list.map(opt => `<div class="dropdown-item" data-value="${opt.value}">${opt.label}</div>`).join('');
+            const current = purposeInput?.value?.trim();
+            if (current && !list.some(o => o.value === current)) {
+                // If previously selected onboarding value but switched away from Yubikey, keep user's input; do nothing
+            }
+        }
         
         // ========== Navigation ==========
         function setupEventListeners() {
@@ -3504,6 +3531,7 @@
                     document.getElementById('currentStock').textContent = item.stock;
                 }
                 updateOutboundAttachmentVisibility();
+                updatePurposeDropdownOptions();
             });
             
             const attachmentButton = document.getElementById('outboundAttachmentButton');
@@ -4175,7 +4203,8 @@
             const item = items.find(i => i.id === itemId);
             const isYubikey = isAttachmentRequiredItem(item);
             const purpose = purposeInput ? purposeInput.value.trim() : '';
-            const isNewEmployeeOnboarding = purpose === '新员工入职';
+            const onboardingValues = ['新员工入职', '新员工', '新员工功能'];
+            const isNewEmployeeOnboarding = onboardingValues.includes(purpose);
 
             // 如果是 Yubikey 且用途不是新员工入职，则显示附件上传
             const show = isYubikey && !isNewEmployeeOnboarding;
@@ -4861,7 +4890,8 @@
             
             const editingId = window.editingTransactionId || null;
             const requiresAttachment = isAttachmentRequiredItem(item);
-            const isNewEmployeeOnboarding = purpose.trim() === '新员工入职';
+            const onboardingValues = ['新员工入职', '新员工', '新员工功能'];
+            const isNewEmployeeOnboarding = onboardingValues.includes(purpose.trim());
             
             if (requiresAttachment && !editingId && !attachmentFile && !isNewEmployeeOnboarding) {
                 showToast('请选择附件', 'warning');
@@ -5795,6 +5825,11 @@
             // 重置自定义下拉框
             if (typeof resetCustomDropdowns === 'function') {
                 resetCustomDropdowns();
+            }
+            if (modalId === 'outboundModal') {
+                if (typeof updatePurposeDropdownOptions === 'function') {
+                    updatePurposeDropdownOptions();
+                }
             }
 
             if (modalId === 'outboundModal') {
