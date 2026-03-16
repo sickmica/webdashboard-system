@@ -25,18 +25,33 @@
         linear-gradient(180deg, #ffffff, var(--global-bg));
       color: var(--color-text); min-height: 100vh; }
     .shell { width: 100vw; height: 100vh; background: var(--panel-bg); border: none; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); overflow: hidden; display: grid; grid-template-columns: 1.35fr 0.65fr; }
-    .visual { position: relative; background-color: #ffffff !important; background-image: url('icon/login-visual.png'); background-size: 80% auto; background-position: left 20% center; background-repeat: no-repeat; background-blend-mode: normal; }
-    .visual::after { content: ""; position: absolute; inset: 0; background: none; }
+    .visual { position: relative; background-color: #ffffff; background-repeat: no-repeat; }
+    .visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url('login-visual.png');
+      background-size: 80% auto;
+      background-position: left 20% center;
+      background-repeat: no-repeat;
+      animation: floatY 2s ease-in-out infinite alternate;
+      will-change: transform;
+      pointer-events: none;
+    }
+    @keyframes floatY {
+      0% { transform: translateY(-6px); }
+      100% { transform: translateY(6px); }
+    }
     .panel { position: relative; display: grid; align-content: center; padding: 48px; overflow: hidden; }
     .panel::before { content: ""; position: absolute; inset: 0; background:
         radial-gradient(600px 400px at 25% 25%, rgba(91,92,235,.20), rgba(91,92,235,0) 60%),
         radial-gradient(700px 460px at 85% 70%, rgba(76,79,214,.14), rgba(76,79,214,0) 60%);
       filter: blur(28px); opacity: .9; pointer-events: none; z-index: 0; }
     .panel-content { position: relative; z-index: 1; width: min(92%, 420px); }
-    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-    .logo-mark { width: 24px; height: 24px; display: grid; grid-template-columns: repeat(2,1fr); grid-template-rows: repeat(2,1fr); gap: 3px; }
-    .logo-mark span { display: block; background: var(--primary); border-radius: 4px; }
-    .system-title { font-size: 20px; font-weight: 900; letter-spacing: .3px; }
+    .logo { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 24px; margin-bottom: 100px; text-align: center; }
+    .logo-mark { width: 32px; height: 32px; display: grid; grid-template-columns: repeat(2,1fr); grid-template-rows: repeat(2,1fr); gap: 4px; }
+    .logo-mark span { display: block; background: var(--primary); border-radius: 6px; }
+    .system-title { font-size: 40px; font-weight: 900; letter-spacing: .3px; }
     .title { font-size: 22px; font-weight: 900; margin: 8px 0 4px; }
     .subtitle { color: var(--color-subtext); font-size: 13px; margin-bottom: 18px; }
     .form-group { margin-bottom: 14px; }
