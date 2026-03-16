@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 - 库存管理系统</title>
+  <link rel="icon" type="image/svg+xml" href="icon/管理.svg">
+  <style>
+    :root {
+      --color-bg: #f6f6ff;
+      --global-bg: #f3f1ff;
+      --color-text: #0a0a0a;
+      --color-subtext: #667085;
+      --panel-bg: #ffffff;
+      --panel-border: #e8e9f5;
+      --primary: #5b5ceb;
+      --primary-700: #4c4fd6;
+      --radius-xl: 0px;
+      --radius-lg: 16px;
+      --shadow-xl: none;
+    }
+    body { margin: 0; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; background:
+        radial-gradient(900px 500px at 10% 0%, rgba(91,92,235,.10), rgba(91,92,235,0) 60%),
+        radial-gradient(900px 500px at 90% 100%, rgba(76,79,214,.08), rgba(76,79,214,0) 60%),
+        linear-gradient(180deg, #ffffff, var(--global-bg));
+      color: var(--color-text); min-height: 100vh; }
+    .shell { width: 100vw; height: 100vh; background: var(--panel-bg); border: none; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); overflow: hidden; display: grid; grid-template-columns: 1.35fr 0.65fr; }
+    .visual { position: relative; background-color: #ffffff !important; background-image: url('login-visual.png'); background-size: 80% auto; background-position: left 20% center; background-repeat: no-repeat; background-blend-mode: normal; }
+    .visual::after { content: ""; position: absolute; inset: 0; background: none; }
+    .panel { position: relative; display: grid; align-content: center; padding: 48px; overflow: hidden; }
+    .panel::before { content: ""; position: absolute; inset: 0; background:
+        radial-gradient(600px 400px at 25% 25%, rgba(91,92,235,.20), rgba(91,92,235,0) 60%),
+        radial-gradient(700px 460px at 85% 70%, rgba(76,79,214,.14), rgba(76,79,214,0) 60%);
+      filter: blur(28px); opacity: .9; pointer-events: none; z-index: 0; }
+    .panel-content { position: relative; z-index: 1; width: min(92%, 420px); }
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .logo-mark { width: 24px; height: 24px; display: grid; grid-template-columns: repeat(2,1fr); grid-template-rows: repeat(2,1fr); gap: 3px; }
+    .logo-mark span { display: block; background: var(--primary); border-radius: 4px; }
+    .system-title { font-size: 20px; font-weight: 900; letter-spacing: .3px; }
+    .title { font-size: 22px; font-weight: 900; margin: 8px 0 4px; }
+    .subtitle { color: var(--color-subtext); font-size: 13px; margin-bottom: 18px; }
+    .form-group { margin-bottom: 14px; }
+    .label { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .input-wrap { position: relative; }
+    .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #9aa4b2; }
+    .input { width: 100%; height: 44px; padding: 0 12px 0 36px; border: 1px solid #e6e8ef; border-radius: 10px; background: #f8fafc; font-size: 14px; transition: border-color .2s, box-shadow .2s, background .2s; }
+    .input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(91,92,235,.14); }
+    .btn { width: 100%; height: 44px; border: none; border-radius: 9999px; background: linear-gradient(180deg, var(--primary), var(--primary-700)); color: #fff; font-weight: 800; letter-spacing: .3px; cursor: pointer; transition: filter .2s, transform .05s; }
+    .btn:hover { filter: brightness(1.05); }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: .7; cursor: not-allowed; }
+    .error { color: #ef4444; font-size: 12px; min-height: 18px; margin-top: 6px; }
+    .footer { margin-top: 14px; text-align: center; color: var(--color-subtext); font-size: 12px; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 0 12px; }
+    .remember { display: inline-flex; align-items: center; gap: 8px; color: var(--color-subtext); font-size: 12px; user-select: none; }
+    .remember input { width: 16px; height: 16px; }
+    @media (max-width: 860px) { .shell { grid-template-columns: 1fr; height: 100vh; } .visual { display: none; } .panel { padding: 32px; } .panel-content { width: min(92%, 420px); } }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <div class="visual"></div>
+    <div class="panel">
+      <div class="panel-content">
+        <div class="logo">
+          <div class="logo-mark">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="system-title">库存管理系统</div>
+        </div>
+        <h1 class="title">登录</h1>
+        <p class="subtitle">欢迎登录库存管理系统～</p>
+        <form id="loginForm" autocomplete="on">
+          <div class="form-group">
+            <label class="label" for="email">账号</label>
+            <div class="input-wrap">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/></svg>
+              <input id="email" name="username" class="input" type="email" placeholder="请输入账号" autocomplete="username">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="label" for="password">密码</label>
+            <div class="input-wrap">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 8V7a5 5 0 0 0-10 0v1H5v12h14V8Zm-8-1a3 3 0 0 1 6 0v1H9Zm8 11H7V10h10Z"/></svg>
+              <input id="password" name="password" class="input" type="password" placeholder="请输入密码" autocomplete="current-password">
+            </div>
+          </div>
+          <div class="row">
+            <label class="remember">
+              <input id="rememberPwd" type="checkbox" checked>
+              记住密码（使用浏览器密码管理）
+            </label>
+          </div>
+          <button id="loginBtn" class="btn" type="submit">登录</button>
+          <div id="error" class="error"></div>
+        </form>
+        <div class="footer">受保护的内部系统 · 未授权禁止访问</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCliFpgd9s25NMnN9aC_zcUVEa_LYXsclo",
+      authDomain: "laptop-repair-system-ab5cb.firebaseapp.com",
+      projectId: "laptop-repair-system-ab5cb",
+    };
+    let app = null;
+    let auth = null;
+    let isLoggingIn = false;
+    function init() {
+      try {
+        if (firebase && (!firebase.apps || !firebase.apps.length)) {
+          app = firebase.initializeApp(firebaseConfig);
+        } else {
+          app = firebase.app();
+        }
+        auth = firebase.auth();
+        auth.onAuthStateChanged((user) => {
+          if (user && !isLoggingIn) {
+            location.href = 'webdashboard.html';
+          }
+        });
+      } catch (e) {
+        document.getElementById('error').textContent = '初始化失败，请刷新重试';
+      }
+    }
+    function showError(msg) {
+      document.getElementById('error').textContent = msg || '';
+    }
+    async function login() {
+      showError('');
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true; btn.textContent = '登录中...';
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('rememberPwd')?.checked;
+      try {
+        isLoggingIn = true;
+        if (remember && auth && firebase?.auth?.Auth?.Persistence?.LOCAL) {
+          await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        }
+        await auth.signInWithEmailAndPassword(email, password);
+        await storeCredentialsIfNeeded(email, password);
+        location.href = 'webdashboard.html';
+      } catch (err) {
+        let msg = '登录失败';
+        if (err && err.code) {
+          const map = {
+            'auth/invalid-email': '邮箱格式不正确',
+            'auth/user-disabled': '账户已被禁用',
+            'auth/user-not-found': '用户不存在',
+            'auth/wrong-password': '密码错误'
+          };
+          msg = map[err.code] || (err.message || msg);
+        }
+        showError(msg);
+      } finally {
+        btn.disabled = false; btn.textContent = '登录';
+        isLoggingIn = false;
+      }
+    }
+    async function storeCredentialsIfNeeded(email, password) {
+      try {
+        const remember = document.getElementById('rememberPwd')?.checked;
+        if (!remember) return;
+        if ('credentials' in navigator) {
+          if (window.PasswordCredential) {
+            const cred = new PasswordCredential({ id: email, password });
+            await navigator.credentials.store(cred);
+          } else if (navigator.credentials.store) {
+            // Some browsers support FederatedCredential only; ignore silently
+          }
+        }
+      } catch {}
+    }
+    async function tryAutofill() {
+      try {
+        if ('credentials' in navigator) {
+          const cred = await navigator.credentials.get({ password: true, mediation: 'silent' });
+          if (cred && cred.id && cred.password) {
+            const emailEl = document.getElementById('email');
+            const pwdEl = document.getElementById('password');
+            if (emailEl && !emailEl.value) emailEl.value = cred.id;
+            if (pwdEl && !pwdEl.value) pwdEl.value = cred.password;
+          }
+        }
+      } catch {}
+    }
+    document.getElementById('loginBtn').addEventListener('click', async (e) => { e.preventDefault(); await login(); await storeCredentialsIfNeeded(); });
+    document.getElementById('loginForm').addEventListener('submit', async (e) => { e.preventDefault(); await login(); await storeCredentialsIfNeeded(); });
+    tryAutofill(); init();
+  </script>
+</body>
+</html>
