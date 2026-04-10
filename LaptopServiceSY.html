@@ -10,9 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <!-- 添加 Firebase SDK（补充 Auth SDK） -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <!-- 配置Tailwind自定义颜色和深色模式 -->
     <script>
@@ -818,7 +818,7 @@
                     initEnhancedFirebaseListeners();
                 } else {
                     console.log('用户未登录，跳转到登录页');
-                    window.location.href = 'index.html';
+                    window.location.href = 'login.html';
                 }
             });
         } catch (error) {
@@ -832,7 +832,7 @@
                 remove: () => Promise.resolve()
             }) };
             recordsRef = database.ref('repairRecords');
-            auth = { onAuthStateChanged: (cb) => cb(null) };
+            auth = { onAuthStateChanged: (cb) => cb(null), signOut: () => Promise.resolve() };
         }
         
         // 存储所有维修记录
@@ -933,7 +933,7 @@
                     if (confirm('确定要退出登录吗？')) {
                         auth.signOut().then(() => {
                             console.log('用户已登出');
-                            window.location.href = 'index.html';
+                            window.location.href = 'login.html';
                         }).catch((error) => {
                             console.error('登出失败:', error);
                             showNotification('登出失败', 'error');
