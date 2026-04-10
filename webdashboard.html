@@ -224,9 +224,13 @@
             background: #111827;
         }
 
+        :root[data-theme="dark"] .nav-item {
+            color: #94a3b8;
+        }
+
         :root[data-theme="dark"] .nav-item:hover {
             background: rgba(255, 255, 255, 0.05);
-            color: var(--color-text-primary);
+            color: #ffffff;
         }
 
         :root[data-theme="dark"] .nav-item.active {
@@ -390,17 +394,18 @@
         
         .nav-title {
             font-size: 12px;
-            font-weight: 600;
-            color: #94a3b8;
+            font-weight: 700;
+            color: #475569;
             padding: 8px var(--space-md);
             margin-bottom: 8px;
-            letter-spacing: 0.025em;
+            letter-spacing: 0.05em;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
             border-radius: 8px;
+            text-transform: uppercase;
         }
 
         .nav-title:hover {
@@ -435,7 +440,7 @@
         }
 
         :root[data-theme="dark"] .nav-title {
-            color: #64748b;
+            color: #94a3b8;
         }
         
         .nav-item {
@@ -444,11 +449,11 @@
             gap: 12px;
             padding: 10px 16px;
             border-radius: 10px;
-            color: #64748b;
+            color: #1e293b;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 14.5px;
+            font-weight: 600;
             text-decoration: none;
             margin-bottom: 4px;
             position: relative;
@@ -3962,7 +3967,7 @@
                         <span class="nav-icon">📜</span>
                         <span>操作日志</span>
                     </a>
-                    <a class="nav-item" href="https://sickmica.github.io/webdashboard-system/LaptopServiceSY.html" target="_blank">
+                    <a class="nav-item" href="LaptopServiceSY.html">
                         <span class="nav-icon">🛠️</span>
                         <span>笔记本维修系统</span>
                         <span class="nav-external">↗</span>
@@ -6072,18 +6077,33 @@
             outboundValues = days.map(d => statsByDay[d]?.outbound || 0);
             
             const maxValue = Math.max(...inboundValues, ...outboundValues, 0);
-            if (!maxValue) {
-                container.innerHTML = '<p style="color: var(--color-text-tertiary); text-align: center;">暂无出入库数据</p>';
-                return;
-            }
-            if (typeof echarts === 'undefined') {
-                container.innerHTML = '<p style="color: var(--color-danger); text-align: center;">图表库加载失败，请检查网络后刷新页面</p>';
-                return;
-            }
+            
+            // Get existing instance
             let chart = echarts.getInstanceByDom(container);
+            
+            if (!maxValue) {
+                if (chart) {
+                    chart.dispose();
+                }
+                container.innerHTML = '<p style="color: var(--color-text-tertiary); text-align: center; padding-top: 100px;">暂无出入库数据</p>';
+                return;
+            }
+            
+            if (typeof echarts === 'undefined') {
+                container.innerHTML = '<p style="color: var(--color-danger); text-align: center; padding-top: 100px;">图表库加载失败，请检查网络后刷新页面</p>';
+                return;
+            }
+            
             container.style.height = '280px';
-            if (!chart) {
+            
+            // If the container has a <p> tag, we must re-init even if getInstanceByDom found something
+            if (container.querySelector('p')) {
+                if (chart) chart.dispose();
+                chart = null;
                 container.innerHTML = '';
+            }
+
+            if (!chart) {
                 chart = echarts.init(container, null, {
                     renderer: 'canvas',
                     useDirtyRect: false
@@ -6233,10 +6253,19 @@
                 ]
             };
             chart.setOption(option, true);
+            
+            // Only add resize listener once per container
+            if (!container.dataset.resizeHandled) {
+                window.addEventListener('resize', function() {
+                    const currentChart = echarts.getInstanceByDom(container);
+                    if (currentChart) {
+                        currentChart.resize();
+                    }
+                });
+                container.dataset.resizeHandled = 'true';
+            }
+            
             chart.resize();
-            window.addEventListener('resize', function() {
-                chart.resize();
-            });
         }
         
         // ========== Items Management ==========
