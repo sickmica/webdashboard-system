@@ -816,10 +816,7 @@
                     updateSyncStatus('synced');
                     // 只有在登录后才初始化监听器
                     initEnhancedFirebaseListeners();
-                } else {
-                    console.log('用户未登录，跳转到登录页');
-                    window.location.href = '1.html';
-                }
+                } 
             });
         } catch (error) {
             console.error('Firebase初始化失败:', error);
