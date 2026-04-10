@@ -794,12 +794,15 @@
         };
         
         // 初始化 Firebase（包含 Auth）
-        let database, recordsRef, auth;
+        let database, recordsRef, auth, inventoryRef;
         try {
-            firebase.initializeApp(firebaseConfig);
+            if (!firebase.apps || !firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
             database = firebase.database();
             auth = firebase.auth(); // 初始化 Auth
             recordsRef = database.ref('repairRecords');
+            inventoryRef = database.ref('wdInventory/items');
             console.log('Firebase初始化成功（包含 Auth 和 Database）');
             
             // 检查登录状态
@@ -816,6 +819,8 @@
                     updateSyncStatus('synced');
                     // 只有在登录后才初始化监听器
                     initEnhancedFirebaseListeners();
+                    // 加载库存中的笔记本型号
+                    loadLaptopModelsFromInventory();
                 } else {
                     console.log('用户未登录，跳转到登录页');
                     window.location.href = 'login.html';
@@ -826,13 +831,52 @@
             // 如果Firebase初始化失败，创建虚拟对象以保持功能正常
             database = { ref: () => ({ 
                 on: () => {}, 
+                once: () => Promise.resolve({ val: () => null }),
                 set: () => Promise.resolve(),
                 push: () => ({ key: Date.now().toString() }),
                 child: () => ({ set: () => Promise.resolve(), remove: () => Promise.resolve() }),
                 remove: () => Promise.resolve()
             }) };
             recordsRef = database.ref('repairRecords');
+            inventoryRef = database.ref('wdInventory/items');
             auth = { onAuthStateChanged: (cb) => cb(null), signOut: () => Promise.resolve() };
+        }
+
+        // 从库存中加载笔记本型号
+        function loadLaptopModelsFromInventory() {
+            if (!inventoryRef) return;
+            
+            inventoryRef.once('value', (snapshot) => {
+                const items = snapshot.val();
+                if (items) {
+                    console.log('正在从库存加载笔记本型号...');
+                    const itemsList = Array.isArray(items) ? items : Object.values(items);
+                    
+                    // 提取所有名称中包含 laptop, notebook, macbook 或属于相关类别的项
+                    const inventoryModels = itemsList
+                        .filter(item => {
+                            const name = (item.name || '').toLowerCase();
+                            const category = (item.category || '').toLowerCase();
+                            return name.includes('laptop') || 
+                                   name.includes('notebook') || 
+                                   name.includes('macbook') ||
+                                   category.includes('it设备') ||
+                                   category.includes('电脑');
+                        })
+                        .map(item => item.name);
+                    
+                    if (inventoryModels.length > 0) {
+                        // 合并并去重
+                        const combinedModels = [...new Set([...laptopModels, ...inventoryModels])];
+                        // 更新全局变量
+                        laptopModels.length = 0;
+                        laptopModels.push(...combinedModels);
+                        // 重新初始化下拉菜单
+                        initLaptopModelDropdown();
+                        console.log(`已从库存加载 ${inventoryModels.length} 个型号`);
+                    }
+                }
+            });
         }
         
         // 存储所有维修记录
@@ -1034,25 +1078,41 @@
                     
                     console.log(`从Firebase加载 ${firebaseRecords.length} 条记录`);
                     
-                    // 只有当云端数据比本地数据新时才更新
-                    if (shouldUpdateLocalData(firebaseRecords)) {
+        // 改进的同步逻辑：只要数据不载入本地就更新本地，或者云端有数据就以云端为准
+                    const localDataStr = JSON.stringify(repairRecords);
+                    const firebaseDataStr = JSON.stringify(firebaseRecords);
+                    
+                    if (firebaseDataStr !== localDataStr) {
+                        console.log('检测到云端数据与本地不一致，正在同步...', {
+                            firebaseCount: firebaseRecords.length,
+                            localCount: repairRecords.length
+                        });
                         repairRecords = firebaseRecords;
                         saveRecordsToStorage();
                         updateAllUI();
                         showNotification('数据已从云端同步', 'success');
+                    } else {
+                        console.log('云端数据与本地一致，无需同步');
                     }
                     
                     updateSyncStatus('synced');
                 } else {
-                    console.log('Firebase中没有记录，将本地数据同步到云端');
+                    console.log('Firebase 中没有找到记录');
+                    // 如果本地有数据，则尝试同步到云端
                     if (repairRecords.length > 0) {
-                        enhancedSyncRecords();
+                        console.log('尝试将本地数据上传到云端...');
+                        saveRecordsToFirebase();
                     }
                     updateSyncStatus('synced');
                 }
             }, (error) => {
                 console.error('Firebase数据监听错误:', error);
                 updateSyncStatus('error', error.code);
+                if (error.code === 'PERMISSION_DENIED') {
+                    showNotification('访问被拒绝：请检查 Firebase 数据库安全规则', 'error');
+                } else {
+                    showNotification(`同步出错: ${error.message}`, 'error');
+                }
             });
         }
 
