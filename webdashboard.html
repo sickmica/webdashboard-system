@@ -211,123 +211,330 @@
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            padding: var(--space-md) 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
         }
         
-        .sidebar-footer {
-            padding: var(--space-md);
+        :root[data-theme="dark"] .sidebar {
+            background: #111827;
+        }
+
+        :root[data-theme="dark"] .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-text-primary);
+        }
+
+        :root[data-theme="dark"] .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        /* Dark mode for Transactions */
+        :root[data-theme="dark"] .t-stat-card,
+        :root[data-theme="dark"] .t-filter-bar,
+        :root[data-theme="dark"] .t-row td {
+            background: #111827;
+            border-color: #1f2a37;
+        }
+
+        :root[data-theme="dark"] .t-row:hover td {
+            background: #1f2937;
+        }
+
+        :root[data-theme="dark"] .segmented-control {
+            background: #1f2937;
+        }
+
+        :root[data-theme="dark"] .segment-item.active {
+            background: #374151;
+            color: #60a5fa;
+        }
+
+        :root[data-theme="dark"] .t-search-input {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        :root[data-theme="dark"] .t-action-btn {
+            background: #374151;
+            color: #9ca3af;
+        }
+
+        /* Dark mode for Recovery Keys */
+        :root[data-theme="dark"] .rk-card {
+            background: #111827;
+            border-color: #1f2a37;
+        }
+
+        :root[data-theme="dark"] .rk-key-container {
+            background: #1f2937;
+        }
+
+        :root[data-theme="dark"] .rk-key-container:hover {
+            background: #374151;
+        }
+
+        :root[data-theme="dark"] .rk-card-footer {
+            border-top-color: #1f2a37;
+        }
+
+        :root[data-theme="dark"] .rk-user-row {
+            color: #f3f4f6;
+        }
+
+        :root[data-theme="dark"] .rk-info-row {
+            color: #d1d5db;
+        }
+
+        :root[data-theme="dark"] .rk-copy-text,
+        :root[data-theme="dark"] .rk-label-sm {
+            color: #6b7280;
         }
         
         .sidebar-header {
-            padding: var(--space-lg);
+            padding: var(--space-lg) var(--space-xl);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            padding: var(--space-lg) 0;
+            justify-content: center;
         }
         
         .logo {
             display: flex;
             align-items: center;    
-            gap: var(--space-md);
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .logo:hover {
+            transform: scale(1.05) translateX(4px);
+            letter-spacing: 0.2px;
+        }
+
+        .logo-text-device {
             color: var(--color-text-primary);
+            transition: color 0.3s;
         }
-        .nav .nav-item { position: relative; }
-        .nav .nav-item.active::before {
-            content: "";
-            position: absolute;
-            left: 8px;
-            top: 8px;
-            bottom: 8px;
-            width: 4px;
-            border-radius: 4px;
-            background: var(--color-accent);
+
+        .logo-text-stock {
+            color: #9333ea; /* More vibrant purple */
+            transition: all 0.3s;
+            text-shadow: 0 0 0px rgba(147, 51, 234, 0);
         }
-        .nav .nav-item.active {
-            padding-left: calc(var(--space-md) + 6px);
-            background: var(--color-accent-light);
-            color: var(--color-accent);
+
+        .logo:hover .logo-text-stock {
+            color: #a855f7; /* Brighter purple on hover */
+            text-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
         }
-        
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: var(--radius-md);
+
+        .sidebar.collapsed .logo {
+            width: 0;
+            opacity: 0;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        .sidebar-toggle {
+            background: transparent;
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 6px;
+            border-radius: 8px;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
         }
         
         .nav {
             flex: 1;
-            padding: var(--space-md);
+            padding: 0 var(--space-md);
             overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar.collapsed .nav {
+            padding: 0 10px;
         }
         
         .nav-section {
-            margin-bottom: var(--space-lg);
+            margin-bottom: 24px;
         }
         
         .nav-title {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--color-text-quaternary);
-            padding: 0 var(--space-md);
-            margin-bottom: var(--space-sm);
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            padding: 8px var(--space-md);
+            margin-bottom: 8px;
+            letter-spacing: 0.025em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .nav-title:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+        }
+
+        .nav-title::after {
+            content: "▾";
+            font-size: 10px;
+            transition: transform 0.2s;
+            opacity: 0.5;
+        }
+
+        .nav-section.collapsed .nav-title::after {
+            transform: rotate(-90deg);
+        }
+
+        .nav-section.collapsed .nav-item {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-title::after {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-title {
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            pointer-events: none;
         }
 
         :root[data-theme="dark"] .nav-title {
-            letter-spacing: 0.08em;
-            color: var(--color-text-tertiary);
+            color: #64748b;
         }
         
         .nav-item {
             display: flex;
             align-items: center;
-            gap: var(--space-md);
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--radius-sm);
-            color: var(--color-text-secondary);
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: #64748b;
             cursor: pointer;
-            transition: all 0.2s var(--ease-out-cubic);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            position: relative;
+            transform: translateZ(0); /* Hardware acceleration */
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 12px 0;
+            gap: 0;
+        }
+
+        .sidebar.collapsed .nav-item span:not(.nav-icon) {
+            display: none;
+        }
+
+        .sidebar.collapsed .badge,
+        .sidebar.collapsed .nav-external {
+            display: none;
         }
         
         .nav-item:hover {
-            background: var(--color-bg-tertiary);
-            color: var(--color-text-primary);
-            transform: translateX(2px);
+            background: #f1f5f9;
+            color: #1e293b;
+            transform: translateX(4px);
+        }
+
+        .nav-item:active {
+            transform: translateX(2px) scale(0.98);
         }
         
         .nav-item.active {
-            background: var(--color-accent-light);
-            color: var(--color-accent);
+            background: #eff6ff;
+            color: #3b82f6;
             font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 10px;
+            bottom: 10px;
+            width: 4px;
+            background: #3b82f6;
+            border-radius: 0 4px 4px 0;
+            animation: slideInLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideInLeft {
+            from { transform: scaleY(0); opacity: 0; }
+            to { transform: scaleY(1); opacity: 1; }
         }
         
         .nav-icon {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover .nav-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .nav-external {
+            margin-left: auto;
+            font-size: 12px;
+            opacity: 0.5;
         }
         
         .badge {
             margin-left: auto;
-            background: var(--color-danger);
+            background: #ef4444;
             color: white;
             font-size: 11px;
-            font-weight: 600;
-            padding: 2px 6px;
+            font-weight: 700;
+            padding: 2px 8px;
             border-radius: 10px;
-            min-width: 18px;
+            min-width: 20px;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
         }
         
         .checkbox-wrapper-41 {
@@ -574,7 +781,9 @@
         }
         
         .page.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
             animation: pageFadeIn 0.4s var(--ease-out-cubic);
         }
         
@@ -755,6 +964,15 @@
             border-radius: 20px;
             overflow: hidden;
             box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-body {
+            padding: var(--space-lg);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .card-header {
@@ -846,6 +1064,7 @@
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: var(--space-lg);
             margin-bottom: var(--space-xl);
+            align-items: start; /* Prevent cards from stretching to match the tallest card */
         }
 
         .stats-grid > * {
@@ -863,59 +1082,120 @@
             padding: var(--space-lg);
             transition: all 0.3s var(--ease-spring);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
         }
         
         .stat-card:hover {
-            border-color: var(--color-accent);
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
         }
-        .stat-card--blue { background: linear-gradient(135deg, #eef4ff, #eaf7ff); }
-        .stat-card--orange { background: linear-gradient(135deg, #fff7ed, #fff1f2); }
-        .stat-card--green { background: linear-gradient(135deg, #eefcf6, #ecfeff); }
-        .stat-card--indigo { background: linear-gradient(135deg, #f5f5ff, #eef2ff); }
-        :root[data-theme="dark"] .stat-card--blue { background: linear-gradient(135deg, rgba(59,130,246,.12), rgba(59,130,246,.06)); }
-        :root[data-theme="dark"] .stat-card--orange { background: linear-gradient(135deg, rgba(245,158,11,.14), rgba(245,158,11,.06)); }
-        :root[data-theme="dark"] .stat-card--green { background: linear-gradient(135deg, rgba(16,185,129,.14), rgba(16,185,129,.06)); }
-        :root[data-theme="dark"] .stat-card--indigo { background: linear-gradient(135deg, rgba(99,102,241,.14), rgba(99,102,241,.06)); }
+
+        /* Background color variants for cards */
+        .stat-card--blue { 
+            background: rgba(59, 130, 246, 0.08); 
+            border-color: rgba(59, 130, 246, 0.25); 
+        }
+        .stat-card--orange { 
+            background: rgba(245, 158, 11, 0.08); 
+            border-color: rgba(245, 158, 11, 0.25); 
+        }
+        .stat-card--green { 
+            background: rgba(16, 185, 129, 0.08); 
+            border-color: rgba(16, 185, 129, 0.25); 
+        }
+        .stat-card--indigo { 
+            background: rgba(99, 102, 241, 0.08); 
+            border-color: rgba(99, 102, 241, 0.25); 
+        }
+
+        .stat-card--blue:hover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.12); }
+        .stat-card--orange:hover { border-color: #f59e0b; background: rgba(245, 158, 11, 0.12); }
+        .stat-card--green:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.12); }
+        .stat-card--indigo:hover { border-color: #6366f1; background: rgba(99, 102, 241, 0.12); }
+        
+        :root[data-theme="dark"] .stat-card--blue { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); }
+        :root[data-theme="dark"] .stat-card--orange { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3); }
+        :root[data-theme="dark"] .stat-card--green { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3); }
+        :root[data-theme="dark"] .stat-card--indigo { background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.3); }
         
         .stat-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: var(--space-md);
+            margin-bottom: 0; /* Changed */
         }
         
         .stat-label {
             font-size: 13px;
             color: var(--color-text-secondary);
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
         
         .stat-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
+            background: var(--color-bg-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--color-accent-light);
+            color: var(--color-accent);
         }
         
         .stat-value {
-            font-size: 32px;
-            font-weight: 600;
+            font-size: 28px;
+            font-weight: 700;
             color: var(--color-text-primary);
-            margin-bottom: var(--space-xs);
+            margin-bottom: 0; /* Changed */
+            font-variant-numeric: tabular-nums;
         }
         
+        .stat-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: var(--space-sm);
+            padding-top: var(--space-sm);
+            border-top: 1px solid var(--color-border);
+        }
+
         .stat-change {
-            font-size: 13px;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 4px;
         }
         
+        .stat-trend {
+            height: 20px;
+            width: 50px;
+            opacity: 0.6;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .stat-trend-bar {
+            flex: 1;
+            background: var(--color-accent);
+            border-radius: 1px;
+            min-height: 4px;
+        }
+
         .stat-change.positive {
             color: var(--color-success);
         }
@@ -924,29 +1204,80 @@
             color: var(--color-danger);
         }
         
-        .stat-details-list {
+        .stat-details-wrapper {
+            position: relative;
             margin: var(--space-sm) 0;
-            max-height: 120px;
+            overflow: hidden;
+        }
+
+        .stat-details-list {
+            max-height: 180px; /* Approximately 4-5 items */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
+            padding-right: 3px;
             scrollbar-width: thin;
+            scrollbar-color: var(--color-border) transparent;
+        }
+
+        .stat-details-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .stat-details-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .stat-details-list::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 4px;
+        }
+
+        .stat-details-list::-webkit-scrollbar-thumb:hover {
+            background: var(--color-border-hover);
+        }
+
+        /* Fade out effect at the bottom */
+        .stat-details-wrapper::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to top, var(--color-bg-primary), transparent);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-details-wrapper.has-scroll::after {
+            opacity: 1;
         }
         
         .stat-details-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--color-text-secondary);
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-md);
+            transition: background 0.2s ease;
+        }
+
+        .stat-details-item:hover {
+            background: var(--color-bg-tertiary);
         }
         
         :root[data-theme="dark"] .stat-details-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        :root[data-theme="dark"] .stat-details-item:hover {
+            background: rgba(255, 255, 255, 0.06);
         }
         
         .stat-details-name {
@@ -954,11 +1285,15 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 140px;
+            font-weight: 500;
         }
         
         .stat-details-count {
             font-weight: 600;
             color: var(--color-accent);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         /* Modern Event Stream Design */
@@ -1104,6 +1439,7 @@
         /* Table */
         .table-container {
             overflow-x: auto;
+            flex: 1;
         }
         
         .table {
@@ -1112,18 +1448,20 @@
         }
         
         .table thead {
-            background: var(--color-bg-tertiary);
+            background: transparent;
         }
         
         .table th {
             text-align: left;
             padding: var(--space-md);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--color-text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             border-bottom: 1px solid var(--color-border);
+            background: #f8fafc;
+        }
+        :root[data-theme="dark"] .table th {
+            background: rgba(255, 255, 255, 0.05);
         }
         
         .table td {
@@ -1674,7 +2012,7 @@
         /* Quick Actions */
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: var(--space-md);
             margin-bottom: var(--space-xl);
         }
@@ -1683,41 +2021,802 @@
             background: var(--color-bg-primary);
             border: 1px solid var(--color-border);
             border-radius: var(--radius-lg);
-            padding: var(--space-lg);
+            padding: var(--space-md);
             cursor: pointer;
-            transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-            text-align: center;
+            transition: all 0.2s var(--ease-out-cubic);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quick-action::after {
+            content: "→";
+            position: absolute;
+            right: var(--space-md);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.2s var(--ease-out-cubic);
+            color: var(--color-accent);
+            font-weight: bold;
         }
         
         .quick-action:hover {
             border-color: var(--color-accent);
-            background: var(--color-accent-light);
+            background: var(--color-bg-secondary);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
-        
-        .quick-action-icon {
-            font-size: 32px;
-            margin-bottom: var(--space-md);
+
+        .quick-action:hover::after {
+            opacity: 1;
+            transform: translateX(0);
         }
         
+        .quick-action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            transition: all 0.2s var(--ease-out-cubic);
+        }
+
+        .quick-action:hover .quick-action-icon {
+            transform: scale(1.1);
+        }
+
+        /* Color variations for icons */
+        .qa-add .quick-action-icon { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .qa-inbound .quick-action-icon { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .qa-outbound .quick-action-icon { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .qa-search .quick-action-icon { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+        
+        .quick-action-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
         .quick-action-title {
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
             color: var(--color-text-primary);
+        }
+
+        .quick-action-desc {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
         }
         
         .table-pagination {
-            padding: var(--space-sm) var(--space-md);
+            padding: var(--space-md) 0;
             border-top: 1px solid var(--color-border);
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            gap: var(--space-sm);
+            gap: var(--space-md);
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-top: var(--space-lg);
+        }
+
+        .applications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--space-xl);
+            flex: 1;
+            align-content: start;
+        }
+
+        .application-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 24px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s var(--ease-out-cubic);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, var(--color-bg-card), var(--color-bg-secondary));
+            min-width: 0; /* Ensure card can shrink if needed */
+        }
+
+        .application-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+            border-color: var(--color-primary);
+        }
+
+        .app-card-top-section {
+            padding: var(--space-xl);
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px dashed var(--color-border);
+            position: relative;
+        }
+
+        .app-status-badge-floating {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .app-device-display {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .app-device-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--color-bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .app-device-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--color-text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .app-card-mid-section {
+            padding: var(--space-xl);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .app-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-info-icon {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .app-info-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-info-label {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .app-info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        .app-id-tag {
+            grid-column: 1 / -1;
+            background: var(--color-bg-tertiary);
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
             font-size: 12px;
             color: var(--color-text-secondary);
+            font-weight: 700;
+            border: 1px solid var(--color-border);
         }
-        
+
+        .app-card-bottom-section {
+            padding: 16px var(--space-xl);
+            background: rgba(0,0,0,0.01);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .app-card-bottom-section::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+        }
+
+        .app-chip-btn {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .app-chip-btn.blue {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+        .app-chip-btn.blue:hover {
+            background: #dbeafe;
+            transform: translateY(-2px);
+        }
+
+        .app-chip-btn.red {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        .app-chip-btn.red:hover {
+            background: #fee2e2;
+            transform: translateY(-2px);
+        }
+
+        :root[data-theme="dark"] .app-chip-btn.blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+        :root[data-theme="dark"] .app-chip-btn.red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        .recovery-keys-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--space-lg);
+            flex: 1;
+            align-content: start;
+        }
+
+        .recovery-key-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 24px;
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            transition: all 0.3s var(--ease-out-cubic);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            border-bottom: 4px solid var(--color-accent);
+        }
+
+        /* Inventory Query New Styles */
+        .inventory-search-bar {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            background: var(--color-bg-card);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: 16px;
+            border: 1px solid var(--color-border);
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .inventory-filter-group {
+            display: flex;
+            gap: var(--space-sm);
+            padding-left: var(--space-md);
+            border-left: 1px solid var(--color-border);
+        }
+
+        .inventory-filter-chip {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg-secondary);
+            color: var(--color-text-secondary);
+        }
+
+        .inventory-filter-chip.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .inventory-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .inventory-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s var(--ease-out-cubic);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .inventory-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-primary-light);
+        }
+
+        .inv-card-header {
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            background: rgba(0,0,0,0.01);
+        }
+
+        .inv-category-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--color-bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .inv-card-title-box {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .inv-item-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--color-text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .inv-item-code {
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
+        }
+
+        .inv-card-body {
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .inv-stock-display {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .inv-stock-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .inv-stock-main {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--color-text-primary);
+        }
+
+        .inv-stock-unit {
+            font-size: 13px;
+            color: var(--color-text-tertiary);
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        .inv-stock-progress-container {
+            height: 8px;
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .inv-stock-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .inv-stock-min-marker {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: var(--status-error, #ef4444);
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .inv-card-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding-top: var(--space-md);
+            border-top: 1px dashed var(--color-border);
+        }
+
+        .inv-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .inv-info-label {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .inv-info-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+
+        .inv-card-footer {
+            margin-top: auto;
+            padding: var(--space-md) var(--space-lg);
+            background: rgba(0,0,0,0.01);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inv-status-tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .inv-last-update {
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .inv-stock-status-success { background: #f0fdf4; color: #166534; }
+        .inv-stock-status-warning { background: #fffbeb; color: #92400e; }
+        .inv-stock-status-danger { background: #fef2f2; color: #991b1b; }
+
+        :root[data-theme="dark"] .inv-stock-status-success { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        :root[data-theme="dark"] .inv-stock-status-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        :root[data-theme="dark"] .inv-stock-status-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        /* Asset Card New Styles */
+        .asset-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-out-cubic);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-primary-light);
+        }
+
+        .asset-card-header {
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            background: rgba(0,0,0,0.01);
+            border-bottom: 1px dashed var(--color-border);
+        }
+
+        .asset-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--color-bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .asset-title-box {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .asset-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--color-text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .asset-code {
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
+        }
+
+        .asset-card-body {
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .asset-main-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .asset-stock-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .asset-stock-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--color-text-primary);
+        }
+
+        .asset-stock-unit {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+            font-weight: 600;
+            margin-left: 2px;
+        }
+
+        .asset-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .asset-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .asset-info-label {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .asset-info-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .asset-card-footer {
+            margin-top: auto;
+            padding: 12px var(--space-lg);
+            background: rgba(0,0,0,0.01);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .asset-action-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .asset-mini-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-bg-tertiary);
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .asset-mini-btn:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            transform: scale(1.1);
+        }
+
+        .asset-mini-btn.danger:hover {
+            background: var(--status-error, #ef4444);
+            border-color: var(--status-error, #ef4444);
+        }
+
+        .asset-status-chip {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .rk-card-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .rk-field-label {
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .rk-field-value {
+            font-size: 14px;
+            color: var(--color-text-primary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rk-icon {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .rk-key-section {
+            background: var(--color-bg-secondary);
+            border-radius: 16px;
+            padding: var(--space-lg);
+            margin-top: var(--space-sm);
+            border: 1px dashed var(--color-border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rk-key-section:hover {
+            background: var(--color-bg-tertiary);
+            border-color: var(--color-accent);
+        }
+
+        .rk-key-display {
+            font-family: 'SF Mono', 'Roboto Mono', monospace;
+            font-size: 15px;
+            color: var(--color-accent);
+            letter-spacing: 1px;
+            word-break: break-all;
+            display: block;
+            text-align: center;
+        }
+
+        .rk-key-hint {
+            display: block;
+            text-align: center;
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            margin-top: 8px;
+        }
+
+        .rk-card-footer {
+            margin-top: auto;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rk-audit {
+            font-size: 10px;
+            color: var(--color-text-tertiary);
+            line-height: 1.4;
+        }
+
+        .rk-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .rk-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--color-text-secondary);
+        }
+
+        .rk-action-btn:hover {
+            background: var(--color-bg-secondary);
+            color: var(--color-accent);
+        }
+
+        .rk-action-btn.delete:hover {
+            background: var(--color-danger-light);
+            color: var(--color-danger);
+        }
+
         .pagination-button {
             min-width: 28px;
             height: 26px;
@@ -1737,6 +2836,14 @@
         .pagination-button:hover {
             border-color: var(--color-accent);
             color: var(--color-accent);
+            background: var(--color-bg-secondary);
+        }
+        
+        .pagination-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+            font-weight: 600;
         }
         
         .pagination-button[disabled] {
@@ -1907,6 +3014,8 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: var(--space-lg);
+            flex: 1;
+            align-content: start;
         }
 
         .items-grid > * {
@@ -2099,6 +3208,430 @@
         .type-outbound { color: #ef4444; }
         .type-system { color: var(--color-text-secondary); }
 
+        /* ========== Transaction Page Enhancements ========== */
+        .transaction-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .t-stat-card {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            transition: all 0.3s var(--ease-out-cubic);
+        }
+
+        .t-stat-card:hover {
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .t-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .t-stat-info {
+            flex: 1;
+        }
+
+        .t-stat-label {
+            font-size: 13px;
+            color: var(--color-text-tertiary);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .t-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            line-height: 1;
+        }
+
+        .t-stat-trend {
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .t-stat-trend.up { color: var(--color-success); }
+        .t-stat-trend.down { color: var(--color-danger); }
+
+        /* Modern Transaction Filters */
+        .t-filter-bar {
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .t-search-wrapper {
+            flex: 1;
+            min-width: 240px;
+            position: relative;
+        }
+
+        .t-search-input {
+            width: 100%;
+            height: 38px;
+            padding: 0 12px 0 36px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-bg-secondary);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .t-search-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            background: var(--color-bg-primary);
+            box-shadow: 0 0 0 3px var(--color-accent-light);
+        }
+
+        .t-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-tertiary);
+            font-size: 14px;
+        }
+
+        /* Segmented Control */
+        .segmented-control {
+            display: inline-flex;
+            background: var(--color-bg-tertiary);
+            padding: 4px;
+            border-radius: 10px;
+            gap: 2px;
+        }
+
+        .segment-item {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+        }
+
+        .segment-item:hover {
+            color: var(--color-text-primary);
+        }
+
+        .segment-item.active {
+            background: var(--color-bg-primary);
+            color: var(--color-accent);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Enhanced Table Rows */
+        .t-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            margin-top: -8px;
+        }
+
+        .t-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+        }
+
+        .t-row {
+            background: var(--color-bg-primary);
+            transition: all 0.2s ease;
+        }
+
+        .t-row:hover {
+            transform: scale(1.002);
+            box-shadow: var(--shadow-md);
+            z-index: 1;
+            position: relative;
+        }
+
+        .t-row td {
+            padding: 16px;
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            background: var(--color-bg-primary);
+        }
+
+        .t-row td:first-child {
+            border-left: 1px solid var(--color-border);
+            border-top-left-radius: var(--radius-md);
+            border-bottom-left-radius: var(--radius-md);
+        }
+
+        .t-row td:last-child {
+            border-right: 1px solid var(--color-border);
+            border-top-right-radius: var(--radius-md);
+            border-bottom-right-radius: var(--radius-md);
+        }
+
+        /* Transaction Specific Chips */
+        .t-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .t-type-inbound {
+            background: var(--color-success-light);
+            color: var(--color-success);
+        }
+
+        .t-type-outbound {
+            background: var(--color-danger-light);
+            color: var(--color-danger);
+        }
+
+        .t-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .t-item-name {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .t-item-sub {
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+        }
+
+        .t-amount {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .t-date-cell {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .t-date-main {
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+
+        .t-date-sub {
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+        }
+
+        .t-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .t-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-bg-tertiary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--color-text-secondary);
+        }
+
+        .t-action-btn:hover {
+            background: var(--color-accent-light);
+            color: var(--color-accent);
+        }
+
+        .t-action-btn.delete:hover {
+            background: var(--color-danger-light);
+            color: var(--color-danger);
+        }
+
+        /* ========== Recovery Key Page Enhancements (Screenshot Style) ========== */
+        .recovery-keys-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: var(--space-xl);
+            margin-top: var(--space-lg);
+        }
+
+        .rk-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-bottom: 4px solid #3b82f6; /* Blue accent at bottom */
+        }
+
+        .rk-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .rk-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .rk-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rk-label-sm {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .rk-user-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .rk-header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .rk-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            padding: 4px;
+        }
+
+        .rk-icon-btn:hover {
+            opacity: 1;
+        }
+
+        .rk-card-mid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .rk-info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .rk-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .rk-key-container {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .rk-key-container:hover {
+            background: #f1f5f9;
+        }
+
+        .rk-key-title {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .rk-key-value {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: #3b82f6;
+            word-break: break-all;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+
+        .rk-copy-text {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .rk-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 4px;
+        }
+
+        .rk-date-text {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
         /* Confirm Modal Styles */
         .modal-confirm {
             max-width: 400px !important;
@@ -2245,18 +3778,6 @@
             border-color: rgba(14, 165, 233, 0.2);
         }
 
-        .data-chip-desc {
-            background: #fafafa;
-            color: #666;
-            border-color: #eee;
-            max-width: 300px;
-        }
-        :root[data-theme="dark"] .data-chip-desc {
-            background: rgba(255, 255, 255, 0.05);
-            color: #aaa;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
         .data-chip-code {
             background: #f8fafc;
             color: #475569;
@@ -2398,9 +3919,11 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <div class="logo-icon">WD</div>
-                    <span>库存管理</span>
+                    <span class="logo-text-device">DEVICE</span><span class="logo-text-stock">STOCK</span>
                 </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <span>☰</span>
+                </button>
             </div>
             
             <nav class="nav">
@@ -2431,6 +3954,10 @@
                         <span class="nav-icon">📋</span>
                         <span>申请记录-无库存</span>
                     </a>
+                    <a class="nav-item" data-page="recovery-keys">
+                        <span class="nav-icon">🔑</span>
+                        <span>Mac Recovery Key</span>
+                    </a>
                     <a class="nav-item" data-page="logs">
                         <span class="nav-icon">📜</span>
                         <span>操作日志</span>
@@ -2438,12 +3965,12 @@
                     <a class="nav-item" href="https://sickmica.github.io/laptop-repair-system/" target="_blank">
                         <span class="nav-icon">🛠️</span>
                         <span>笔记本维修系统</span>
-                        <span style="margin-left: auto; font-size: 10px;">↗</span>
+                        <span class="nav-external">↗</span>
                     </a>
                     <a class="nav-item" href="https://wdc.service-now.com/now/nav/ui/classic/params/target/alm_hardware_list.do%3Fsysparm_userpref_module%3Da2506be23770db00548b53b543990ea8%26sysparm_clear_stack%3Dtrue" target="_blank">
                         <span class="nav-icon">🖥️</span>
                         <span>CMDB</span>
-                        <span style="margin-left: auto; font-size: 10px;">↗</span>
+                        <span class="nav-external">↗</span>
                     </a>
                 </div>
                 
@@ -2463,7 +3990,7 @@
                     </a>
                 </div>
             </nav>
-            <div class="sidebar-footer">
+            <div style="padding: 20px; display: flex; justify-content: center; border-top: 1px solid var(--color-border);">
                 <div class="checkbox-wrapper-41">
                     <input type="checkbox" id="themeToggle">
                 </div>
@@ -2540,46 +4067,126 @@
                     </div>
                     
                     <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-                        <div class="stat-card stat-card--blue">
-                            <div class="stat-header">
-                                <span class="stat-label">物品种类</span>
-                                <div class="stat-icon" style="background: rgba(59,130,246,.15); color: #2563eb;">📦</div>
+                        <!-- Left Column: 3 Cards + Quick Actions -->
+                        <div style="display: flex; flex-direction: column; gap: var(--space-lg); grid-column: span 3;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg);">
+                                <div class="stat-card stat-card--blue">
+                                    <div class="stat-header">
+                                        <span class="stat-label">物品种类</span>
+                                        <div class="stat-icon">📦</div>
+                                    </div>
+                                    <div class="stat-value" id="totalItems">0</div>
+                                    <div class="stat-footer">
+                                        <div class="stat-change positive">
+                                            <span>↑ 5</span>
+                                            <span style="color: var(--color-text-tertiary);">本周新增</span>
+                                        </div>
+                                        <div class="stat-trend">
+                                            <div class="stat-trend-bar" style="height: 40%"></div>
+                                            <div class="stat-trend-bar" style="height: 60%"></div>
+                                            <div class="stat-trend-bar" style="height: 50%"></div>
+                                            <div class="stat-trend-bar" style="height: 80%"></div>
+                                            <div class="stat-trend-bar" style="height: 70%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-card stat-card--orange">
+                                    <div class="stat-header">
+                                        <span class="stat-label">低库存预警</span>
+                                        <div class="stat-icon">⚠️</div>
+                                    </div>
+                                    <div class="stat-value" id="lowStock">0</div>
+                                    <div class="stat-footer">
+                                        <div class="stat-change negative">
+                                            <span>需要补货</span>
+                                        </div>
+                                        <div class="stat-trend">
+                                            <div class="stat-trend-bar" style="height: 80%; background: var(--color-danger);"></div>
+                                            <div class="stat-trend-bar" style="height: 70%; background: var(--color-danger);"></div>
+                                            <div class="stat-trend-bar" style="height: 60%; background: var(--color-danger);"></div>
+                                            <div class="stat-trend-bar" style="height: 50%; background: var(--color-danger);"></div>
+                                            <div class="stat-trend-bar" style="height: 40%; background: var(--color-danger);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-card stat-card--green">
+                                    <div class="stat-header">
+                                        <span class="stat-label" id="rangeLabel">近7天出入库</span>
+                                        <div class="stat-icon">📊</div>
+                                    </div>
+                                    <div class="stat-value" id="todayTransactions">0</div>
+                                    <div class="stat-footer">
+                                        <div class="stat-change neutral">
+                                            <span>入: <span id="todayIn">0</span> | 出: <span id="todayOut">0</span></span>
+                                        </div>
+                                        <div class="stat-trend">
+                                            <div class="stat-trend-bar" style="height: 30%; background: var(--color-success);"></div>
+                                            <div class="stat-trend-bar" style="height: 40%; background: var(--color-success);"></div>
+                                            <div class="stat-trend-bar" style="height: 60%; background: var(--color-success);"></div>
+                                            <div class="stat-trend-bar" style="height: 70%; background: var(--color-success);"></div>
+                                            <div class="stat-trend-bar" style="height: 90%; background: var(--color-success);"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="stat-value" id="totalItems">0</div>
-                            <div class="stat-change positive">
-                                <span>↑ 5</span>
-                                <span style="color: var(--color-text-tertiary);">本周新增</span>
+                            
+                            <!-- Quick Actions moved here to fill the space -->
+                            <div class="card" style="flex: 1;">
+                                <div class="card-header" style="padding: var(--space-md) var(--space-lg);">
+                                    <h3 class="card-title" style="font-size: 14px;">快速操作</h3>
+                                </div>
+                                <div class="card-body" style="padding: var(--space-md);">
+                                    <div class="quick-actions" style="margin-bottom: 0; grid-template-columns: repeat(4, 1fr); gap: var(--space-sm);">
+                                        <div class="quick-action qa-add" onclick="openAddItemModal()" style="padding: var(--space-sm); flex-direction: column; text-align: center; gap: var(--space-xs);">
+                                            <div class="quick-action-icon" style="width: 36px; height: 36px; font-size: 18px; margin: 0 auto;">➕</div>
+                                            <div class="quick-action-info" style="align-items: center;">
+                                                <div class="quick-action-title" style="font-size: 13px;">添加物品</div>
+                                            </div>
+                                        </div>
+                                        <div class="quick-action qa-inbound" onclick="openAddTransactionModal('inboundModal')" style="padding: var(--space-sm); flex-direction: column; text-align: center; gap: var(--space-xs);">
+                                            <div class="quick-action-icon" style="width: 36px; height: 36px; font-size: 18px; margin: 0 auto;">📥</div>
+                                            <div class="quick-action-info" style="align-items: center;">
+                                                <div class="quick-action-title" style="font-size: 13px;">入库登记</div>
+                                            </div>
+                                        </div>
+                                        <div class="quick-action qa-outbound" onclick="openAddTransactionModal('outboundModal')" style="padding: var(--space-sm); flex-direction: column; text-align: center; gap: var(--space-xs);">
+                                            <div class="quick-action-icon" style="width: 36px; height: 36px; font-size: 18px; margin: 0 auto;">📤</div>
+                                            <div class="quick-action-info" style="align-items: center;">
+                                                <div class="quick-action-title" style="font-size: 13px;">出库登记</div>
+                                            </div>
+                                        </div>
+                                        <div class="quick-action qa-search" onclick="switchPage('inventory')" style="padding: var(--space-sm); flex-direction: column; text-align: center; gap: var(--space-xs);">
+                                            <div class="quick-action-icon" style="width: 36px; height: 36px; font-size: 18px; margin: 0 auto;">🔍</div>
+                                            <div class="quick-action-info" style="align-items: center;">
+                                                <div class="quick-action-title" style="font-size: 13px;">查询库存</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="stat-card stat-card--orange">
-                            <div class="stat-header">
-                                <span class="stat-label">低库存预警</span>
-                                <div class="stat-icon" style="background: rgba(245,158,11,.15); color: #b45309;">⚠️</div>
-                            </div>
-                            <div class="stat-value" id="lowStock">0</div>
-                            <div class="stat-change negative">
-                                <span>需要补货</span>
-                            </div>
-                        </div>
-                        <div class="stat-card stat-card--green">
-                            <div class="stat-header">
-                                <span class="stat-label" id="rangeLabel">近7天出入库</span>
-                                <div class="stat-icon" style="background: rgba(16,185,129,.15); color: #059669;">📊</div>
-                            </div>
-                            <div class="stat-value" id="todayTransactions">0</div>
-                            <div class="stat-change neutral">
-                                <span>入: <span id="todayIn">0</span> | 出: <span id="todayOut">0</span></span>
-                            </div>
-                        </div>
-                        <div class="stat-card stat-card--indigo">
+
+                        <!-- Right Column: Total Stock Card -->
+                        <div class="stat-card stat-card--indigo" style="grid-column: span 1; height: 100%;">
                             <div class="stat-header">
                                 <span class="stat-label">库存总量</span>
-                                <div class="stat-icon" style="background: rgba(99,102,241,.15); color: #4f46e5;">📦</div>
+                                <div class="stat-icon">📦</div>
                             </div>
                             <div class="stat-value" id="totalStockUnits">0</div>
-                            <div id="stockDetailsList" class="stat-details-list"></div>
-                            <div class="stat-change positive">
-                                <span style="color: var(--color-text-tertiary);">按物品库存合计</span>
+                            <div class="stat-details-wrapper" id="stockDetailsWrapper">
+                                <div id="stockDetailsList" class="stat-details-list"></div>
+                            </div>
+                            <div class="stat-footer">
+                                <div class="stat-change positive">
+                                    <span style="color: var(--color-text-tertiary);">按物品库存合计</span>
+                                </div>
+                                <div class="stat-trend">
+                                    <div class="stat-trend-bar" style="height: 50%; background: #6366f1;"></div>
+                                    <div class="stat-trend-bar" style="height: 45%; background: #6366f1;"></div>
+                                    <div class="stat-trend-bar" style="height: 60%; background: #6366f1;"></div>
+                                    <div class="stat-trend-bar" style="height: 55%; background: #6366f1;"></div>
+                                    <div class="stat-trend-bar" style="height: 75%; background: #6366f1;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2594,32 +4201,6 @@
                     </div>
                     
                     <div class="card" style="margin-top: var(--space-xl);">
-                        <div class="card-header">
-                            <h3 class="card-title">快速操作</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="quick-actions">
-                                <div class="quick-action" onclick="openAddItemModal()">
-                                    <div class="quick-action-icon">➕</div>
-                                    <div class="quick-action-title">添加物品</div>
-                                </div>
-                                <div class="quick-action" onclick="openAddTransactionModal('inboundModal')">
-                                    <div class="quick-action-icon">📥</div>
-                                    <div class="quick-action-title">入库登记</div>
-                                </div>
-                                <div class="quick-action" onclick="openAddTransactionModal('outboundModal')">
-                                    <div class="quick-action-icon">📤</div>
-                                    <div class="quick-action-title">出库登记</div>
-                                </div>
-                                <div class="quick-action" onclick="switchPage('inventory')">
-                                    <div class="quick-action-icon">🔍</div>
-                                    <div class="quick-action-title">查询库存</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">最近活动</h3>
                             <button class="btn btn-ghost btn-sm" onclick="switchPage('transactions')">查看全部 →</button>
@@ -2646,33 +4227,25 @@
                         </div>
                     </div>
                     
-                    <!-- Filters -->
-                    <div class="filters">
-                        <div class="filter-item">
-                            <select class="form-select" id="filterCategory" onchange="filterItems()">
+                    <!-- Modern Search & Filter Bar -->
+                    <div class="inventory-search-bar">
+                        <div style="position: relative; flex: 1;">
+                            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.5;">🔍</span>
+                            <input type="text" class="form-input" id="itemSearchInput" placeholder="搜索物品名称、编号或类别..." oninput="filterItems()" style="padding-left: 36px; border: none; background: transparent;">
+                        </div>
+                        <div class="inventory-filter-group">
+                            <select class="form-select" id="filterCategory" onchange="filterItems()" style="border: none; background: transparent; font-weight: 600;">
                                 <option value="">所有类别</option>
                             </select>
-                        </div>
-                        <div class="filter-item">
-                            <select class="form-select" id="filterWarehouse" onchange="filterItems()">
+                            <select class="form-select" id="filterWarehouse" onchange="filterItems()" style="border: none; background: transparent; font-weight: 600;">
                                 <option value="">所有仓库</option>
                             </select>
+                            <div style="width: 1px; height: 24px; background: var(--color-border); margin: 0 8px;"></div>
+                            <div class="asset-action-group">
+                                <button class="asset-mini-btn" onclick="toggleView('grid')" id="gridViewBtn" title="网格视图">⊞</button>
+                                <button class="asset-mini-btn" onclick="toggleView('table')" id="tableViewBtn" title="列表视图">☰</button>
+                            </div>
                         </div>
-                        <div class="filter-item">
-                            <select class="form-select" id="filterStatus" onchange="filterItems()">
-                                <option value="">所有状态</option>
-                                <option value="normal">正常</option>
-                                <option value="low">低库存</option>
-                                <option value="out">缺货</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-ghost" onclick="clearFilters()">清除筛选</button>
-                    </div>
-                    
-                    <!-- View Toggle -->
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: var(--space-lg); gap: var(--space-sm);">
-                        <button class="btn btn-ghost btn-sm" onclick="toggleView('grid')" id="gridViewBtn">⊞ 网格</button>
-                        <button class="btn btn-ghost btn-sm" onclick="toggleView('table')" id="tableViewBtn">☰ 列表</button>
                     </div>
                     
                     <!-- Items Grid View -->
@@ -2710,70 +4283,105 @@
                         <h1 class="page-title">设备详情</h1>
                         <p class="page-subtitle">按设备管理序列号与分配情况</p>
                     </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">设备列表</h3>
-                        </div>
-                        <div class="card-body">
-                            <div id="devicesGridView" class="items-grid"></div>
+
+                    <div class="inventory-search-bar">
+                        <div style="position: relative; flex: 1;">
+                            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.5;">🔍</span>
+                            <input type="text" class="form-input" id="deviceSearchInput" placeholder="搜索设备名称、编号或类别..." oninput="renderDevices()" style="padding-left: 36px; border: none; background: transparent;">
                         </div>
                     </div>
+                    
+                    <div id="devicesGridView" class="items-grid"></div>
                 </div>
                 
                 <!-- Transactions Page -->
                 <div id="page-transactions" class="page">
                     <div class="page-header">
-                        <h1 class="page-title">出入库管理</h1>
-                        <p class="page-subtitle">记录和管理所有出入库操作</p>
+                        <div class="header-content">
+                            <h1 class="page-title">出入库管理</h1>
+                            <p class="page-subtitle">记录和管理所有库存流动记录</p>
+                        </div>
                         <div class="page-actions">
-                            <button class="btn btn-primary" onclick="openAddTransactionModal('inboundModal')">📥 入库登记</button>
-                            <button class="btn btn-primary" onclick="openAddTransactionModal('outboundModal')">📤 出库登记</button>
+                            <button class="btn btn-primary" onclick="openAddTransactionModal('inboundModal')">
+                                <span style="margin-right: 6px;">📥</span> 入库登记
+                            </button>
+                            <button class="btn btn-primary" onclick="openAddTransactionModal('outboundModal')">
+                                <span style="margin-right: 6px;">📤</span> 出库登记
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Stats -->
+                    <div class="transaction-stats-grid">
+                        <div class="t-stat-card">
+                            <div class="t-stat-icon" style="background: var(--color-accent-light); color: var(--color-accent);">📊</div>
+                            <div class="t-stat-info">
+                                <div class="t-stat-label">今日操作</div>
+                                <div class="t-stat-value" id="t-stat-today">0</div>
+                            </div>
+                        </div>
+                        <div class="t-stat-card">
+                            <div class="t-stat-icon" style="background: var(--color-success-light); color: var(--color-success);">📥</div>
+                            <div class="t-stat-info">
+                                <div class="t-stat-label">今日入库</div>
+                                <div class="t-stat-value" id="t-stat-inbound">0</div>
+                            </div>
+                        </div>
+                        <div class="t-stat-card">
+                            <div class="t-stat-icon" style="background: var(--color-danger-light); color: var(--color-danger);">📤</div>
+                            <div class="t-stat-info">
+                                <div class="t-stat-label">今日出库</div>
+                                <div class="t-stat-value" id="t-stat-outbound">0</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Tabs -->
-                    <div class="tabs">
-                        <button class="tab active" onclick="switchTransactionTab('all')">全部记录</button>
-                        <button class="tab" onclick="switchTransactionTab('inbound')">入库记录</button>
-                        <button class="tab" onclick="switchTransactionTab('outbound')">出库记录</button>
-                    </div>
-                    
-                    <!-- Filters -->
-                    <div class="filters">
-                        <div class="filter-item">
-                            <input type="date" class="form-input" id="filterDateFrom" onchange="filterTransactions()">
+                    <!-- Modern Filter Bar -->
+                    <div class="t-filter-bar">
+                        <div class="segmented-control">
+                            <button class="segment-item active" onclick="switchTransactionTab('all')">全部记录</button>
+                            <button class="segment-item" onclick="switchTransactionTab('inbound')">入库</button>
+                            <button class="segment-item" onclick="switchTransactionTab('outbound')">出库</button>
                         </div>
-                        <div class="filter-item">
-                            <input type="date" class="form-input" id="filterDateTo" onchange="filterTransactions()">
+
+                        <div style="width: 1px; height: 24px; background: var(--color-border); margin: 0 8px;"></div>
+
+                        <div class="t-search-wrapper">
+                            <span class="t-search-icon">🔍</span>
+                            <input type="text" class="t-search-input" id="t-search-input" placeholder="搜索单号、物品、领用人..." oninput="filterTransactions()">
                         </div>
-                        <button class="btn btn-ghost" onclick="clearTransactionFilters()">清除筛选</button>
+
+                        <div class="filter-item" style="margin-bottom: 0;">
+                            <input type="date" class="form-input" id="filterDateFrom" onchange="filterTransactions()" style="height: 38px;">
+                        </div>
+                        <span style="color: var(--color-text-tertiary);">至</span>
+                        <div class="filter-item" style="margin-bottom: 0;">
+                            <input type="date" class="form-input" id="filterDateTo" onchange="filterTransactions()" style="height: 38px;">
+                        </div>
+                        
+                        <button class="btn btn-ghost" onclick="clearTransactionFilters()" style="height: 38px;">重置</button>
                     </div>
                     
                     <!-- Transactions List -->
-                    <div class="card">
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>单号</th>
-                                        <th>申请单号</th>
-                        <th>类型</th>
-                        <th>物品</th>
-                        <th>序列号</th>
-                        <th>数量</th>
-                        <th>领用人</th>
-                        <th>部门</th>
-                        <th>日期</th>
-                        <th>状态</th>
-                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transactionsTableBody">
-                                </tbody>
-                            </table>
-                            <div class="table-pagination" id="transactionsTablePagination"></div>
-                        </div>
+                    <div class="table-container" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+                        <table class="t-table">
+                            <thead>
+                                <tr>
+                                    <th>单号</th>
+                                    <th>类型</th>
+                                    <th>物品详情</th>
+                                    <th>相关序列号</th>
+                                    <th>数量</th>
+                                    <th>经办人/领用人</th>
+                                    <th>日期</th>
+                                    <th>状态</th>
+                                    <th style="text-align: right;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody">
+                            </tbody>
+                        </table>
+                        <div class="table-pagination" id="transactionsTablePagination"></div>
                     </div>
                 </div>
                 
@@ -2825,32 +4433,25 @@
                         </div>
                     </div>
                     
-                    <!-- Inventory Table -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">库存明细</h3>
+                    <!-- Inventory Filter Bar -->
+                    <div class="inventory-search-bar">
+                        <div style="position: relative; flex: 1;">
+                            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.5;">🔍</span>
+                            <input type="text" class="form-input" id="inventorySearch" placeholder="搜索物品名称、编号或类别..." oninput="renderInventory()" style="padding-left: 36px; border: none; background: transparent;">
                         </div>
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>物品编号</th>
-                                        <th>物品名称</th>
-                                        <th>类别</th>
-                                        <th>当前库存</th>
-                                        <th>安全库存</th>
-                                        <th>单位</th>
-                                        <th>仓库</th>
-                                        <th>状态</th>
-                                        <th>最后更新</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="inventoryTableBody">
-                                </tbody>
-                            </table>
-                            <div class="table-pagination" id="inventoryTablePagination"></div>
+                        <div class="inventory-filter-group">
+                            <div class="inventory-filter-chip active" data-filter="all" onclick="filterInventoryByStatus('all')">全部</div>
+                            <div class="inventory-filter-chip" data-filter="normal" onclick="filterInventoryByStatus('normal')">正常</div>
+                            <div class="inventory-filter-chip" data-filter="warning" onclick="filterInventoryByStatus('warning')">低库存</div>
+                            <div class="inventory-filter-chip" data-filter="danger" onclick="filterInventoryByStatus('danger')">缺货</div>
                         </div>
                     </div>
+                    
+                    <!-- Inventory Cards -->
+                    <div id="inventoryCardsContainer" class="inventory-cards-container">
+                        <!-- Cards will be rendered here -->
+                    </div>
+                    <div class="table-pagination" id="inventoryTablePagination"></div>
                 </div>
                 
                 <!-- Reports Page -->
@@ -2862,38 +4463,65 @@
                     
                     <!-- Summary Cards -->
                     <div class="stats-grid">
-                        <div class="stat-card">
+                        <div class="stat-card stat-card--green">
                             <div class="stat-header">
                                 <span class="stat-label">本月入库总量</span>
-                                <div class="stat-icon" style="background: var(--color-success-light); color: var(--color-success);">📥</div>
+                                <div class="stat-icon">📥</div>
                             </div>
                             <div class="stat-value" id="monthlyInbound">0</div>
-                            <div class="stat-change positive">
-                                <span>+15%</span>
-                                <span style="color: var(--color-text-tertiary);">vs 上月</span>
+                            <div class="stat-footer">
+                                <div class="stat-change positive">
+                                    <span>+15%</span>
+                                    <span style="color: var(--color-text-tertiary);">vs 上月</span>
+                                </div>
+                                <div class="stat-trend">
+                                    <div class="stat-trend-bar" style="height: 40%"></div>
+                                    <div class="stat-trend-bar" style="height: 55%"></div>
+                                    <div class="stat-trend-bar" style="height: 70%"></div>
+                                    <div class="stat-trend-bar" style="height: 65%"></div>
+                                    <div class="stat-trend-bar" style="height: 85%"></div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card stat-card--orange">
                             <div class="stat-header">
                                 <span class="stat-label">本月出库总量</span>
-                                <div class="stat-icon" style="background: var(--color-danger-light); color: var(--color-danger);">📤</div>
+                                <div class="stat-icon">📤</div>
                             </div>
                             <div class="stat-value" id="monthlyOutbound">0</div>
-                            <div class="stat-change positive">
-                                <span>+8%</span>
-                                <span style="color: var(--color-text-tertiary);">vs 上月</span>
+                            <div class="stat-footer">
+                                <div class="stat-change positive">
+                                    <span>+8%</span>
+                                    <span style="color: var(--color-text-tertiary);">vs 上月</span>
+                                </div>
+                                <div class="stat-trend">
+                                    <div class="stat-trend-bar" style="height: 30%"></div>
+                                    <div class="stat-trend-bar" style="height: 45%"></div>
+                                    <div class="stat-trend-bar" style="height: 40%"></div>
+                                    <div class="stat-trend-bar" style="height: 60%"></div>
+                                    <div class="stat-trend-bar" style="height: 55%"></div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card stat-card--blue">
                             <div class="stat-header">
                                 <span class="stat-label">周转率</span>
-                                <div class="stat-icon" style="background: var(--color-accent-light); color: var(--color-accent);">🔄</div>
+                                <div class="stat-icon">🔄</div>
                             </div>
                             <div class="stat-value">2.5x</div>
-                            <div class="stat-change neutral">
-                                <span style="color: var(--color-text-tertiary);">本月平均</span>
+                            <div class="stat-footer">
+                                <div class="stat-change neutral">
+                                    <span style="color: var(--color-text-tertiary);">本月平均</span>
+                                </div>
+                                <div class="stat-trend">
+                                    <div class="stat-trend-bar" style="height: 50%"></div>
+                                    <div class="stat-trend-bar" style="height: 50%"></div>
+                                    <div class="stat-trend-bar" style="height: 50%"></div>
+                                    <div class="stat-trend-bar" style="height: 50%"></div>
+                                    <div class="stat-trend-bar" style="height: 50%"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2928,16 +4556,19 @@
                         <h1 class="page-title">申请记录</h1>
                         <p class="page-subtitle">管理设备申请流程与记录</p>
                         <div class="page-actions">
-                            <button class="btn btn-primary" onclick="openAddApplicationModal()">➕ 新增申请</button>
+                            <button class="btn btn-primary" onclick="openAddApplicationModal()">
+                                <span style="font-size: 16px; margin-right: 4px;">+</span> 新增申请
+                            </button>
                         </div>
                     </div>
                     
                     <!-- Filters -->
                     <div class="filters">
-                        <div class="filter-item">
-                            <input type="text" class="form-input" id="searchApplicant" placeholder="搜索申请人..." onkeyup="filterApplications()">
+                        <div class="filter-item" style="position: relative; flex: 1; max-width: 300px;">
+                            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary);">🔍</span>
+                            <input type="text" class="form-input" id="searchApplicant" placeholder="搜索申请人..." onkeyup="filterApplications()" style="padding-left: 36px;">
                         </div>
-                        <div class="filter-item">
+                        <div class="filter-item" style="min-width: 140px;">
                             <select class="form-select" id="filterAppStatus" onchange="filterApplications()">
                                 <option value="">所有状态</option>
                                 <option value="pending">待处理</option>
@@ -2946,30 +4577,39 @@
                                 <option value="completed">已出库</option>
                             </select>
                         </div>
-                        <button class="btn btn-ghost" onclick="clearApplicationFilters()">清除筛选</button>
+                        <button class="btn btn-ghost" onclick="clearApplicationFilters()" style="color: var(--color-text-secondary); font-size: 13px;">清除筛选</button>
                     </div>
                     
                     <!-- Application List -->
-                    <div class="card">
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>申请单号</th>
-                                        <th>申请人</th>
-                                        <th>申请设备</th>
-                                        <th>申请描述</th>
-                                        <th>申请日期</th>
-                                        <th>状态</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="applicationsTableBody">
-                                </tbody>
-                            </table>
-                            <div class="table-pagination" id="applicationsTablePagination"></div>
+                    <div class="card" style="background: transparent; border: none; box-shadow: none; padding: 0; flex: 1; display: flex; flex-direction: column;">
+                        <div id="applicationsTableBody" class="applications-grid">
+                            <!-- Application cards will be rendered here -->
+                        </div>
+                        <div class="table-pagination" id="applicationsTablePagination"></div>
+                    </div>
+                </div>
+
+                <!-- Recovery Keys Page -->
+                <div id="page-recovery-keys" class="page">
+                    <div class="page-header">
+                        <div class="header-content">
+                            <h1 class="page-title">Recovery Keys</h1>
+                            <p class="page-subtitle">查看和管理 Mac 设备的恢复密钥</p>
+                        </div>
+                        <div class="page-actions">
+                            <div class="search-bar" style="max-width: 300px; margin-bottom: 0; position: relative; margin-right: 16px;">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" class="search-input" id="recoveryKeySearch" placeholder="搜索设备、序列号或用户..." oninput="filterRecoveryKeys()">
+                            </div>
+                            <button class="btn btn-primary" onclick="openAddRecoveryKeyModal()">
+                                <span style="font-size: 16px; margin-right: 4px;">+</span> 新增密钥
+                            </button>
                         </div>
                     </div>
+                    <div id="recoveryKeysGrid" class="recovery-keys-grid">
+                        <!-- Recovery key cards will be rendered here -->
+                    </div>
+                    <div class="table-pagination" id="recoveryKeysPagination"></div>
                 </div>
                 
                 <!-- Logs Page -->
@@ -3434,10 +5074,6 @@
                             <label class="form-label">申请日期 <span class="required">*</span></label>
                             <input type="date" class="form-input" id="appDate" required>
                         </div>
-                        <div class="form-group full-width">
-                            <label class="form-label">申请描述 <span class="required">*</span></label>
-                            <textarea class="form-textarea" id="appDescription" required placeholder="请详细说明申请原因及用途"></textarea>
-                        </div>
                     </div>
                 </form>
             </div>
@@ -3467,6 +5103,42 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('notificationModal')">取消</button>
                 <button class="btn btn-primary" onclick="sendNotification()">确认并复制</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Recovery Key Modal -->
+    <div id="recoveryKeyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="recoveryKeyModalTitle">新增 Recovery Key</h2>
+                <button class="modal-close" onclick="closeModal('recoveryKeyModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="recoveryKeyForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">设备型号</label>
+                            <input type="text" class="form-input" id="rkModel" placeholder="例如: MacBook Pro 14">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">序列号</label>
+                            <input type="text" class="form-input" id="rkSerial" placeholder="请输入设备序列号">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">分配人</label>
+                            <input type="text" class="form-input" id="rkUser" placeholder="请输入分配人邮箱">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Recovery Key <span class="required">*</span></label>
+                            <textarea class="form-textarea" id="rkKey" required placeholder="请输入完整的 Recovery Key"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('recoveryKeyModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveRecoveryKey()">保存</button>
             </div>
         </div>
     </div>
@@ -3553,6 +5225,8 @@
     <script>
         // ========== Data Storage ==========
         let items = [];
+        let inventorySearchTerm = '';
+        let inventoryStatusFilter = 'all';
         let transactions = [];
         window.transactions = transactions;
         let categories = ['IT设备', '办公用品', '工具设备', '生产物料'];
@@ -3562,9 +5236,11 @@
         let applicationCounter = 1003;
         let logs = []; // Operation logs
         let applications = [
-            { id: 'WD-APP-1001', applicant: '张三', device: '显示器', date: '2026-02-01', description: '由于业务需要，申请第二块显示器以提高效率', status: 'approved', createdAt: '2026-02-01T10:00:00Z' },
-            { id: 'WD-APP-1002', applicant: '李四', device: '鼠标', date: '2026-02-02', description: '原有鼠标左键失灵，申请更换', status: 'pending', createdAt: '2026-02-02T09:00:00Z' }
+            { id: 'WD-APP-1001', applicant: '张三', device: '显示器', date: '2026-02-01', status: 'approved', createdAt: '2026-02-01T10:00:00Z' },
+            { id: 'WD-APP-1002', applicant: '李四', device: '鼠标', date: '2026-02-02', status: 'pending', createdAt: '2026-02-02T09:00:00Z' }
         ]; // Application records
+        let recoveryKeys = []; // Recovery Keys
+        let editingRecoveryKeyId = null;
         // Dashboard range: '7d' | 'month' | 'all'
         window.dashboardRange = '7d';
         let currentView = 'grid';
@@ -3576,7 +5252,9 @@
         let transactionsPage = 1;
         let inventoryPage = 1;
         let logsPage = 1;
+        let recoveryKeysPage = 1;
         const PAGE_SIZE = 10;
+        const RECOVERY_KEYS_PAGE_SIZE = 8;
         
         const firebaseConfig = {
             apiKey: "AIzaSyCliFpgd9s25NMnN9aC_zcUVEa_LYXsclo",
@@ -3685,6 +5363,7 @@
             renderReports();
             renderSettings();
             renderLogs();
+            renderRecoveryKeys();
             setupEventListeners();
             fetchCloudData();
             updateCloudStatusText();
@@ -3734,20 +5413,70 @@
         }
         async function fetchCloudData() {
             if (!cloudEnabled || !cloudRootRef) return;
+            console.log('Fetching data from cloud...');
             try {
                 const snapshot = await cloudRootRef.once('value');
                 const data = snapshot && snapshot.val ? snapshot.val() : null;
-                if (!data) return;
-                items = Array.isArray(data.items) ? data.items : (data.items || []);
-                transactions = Array.isArray(data.transactions) ? data.transactions : (data.transactions || []);
-                window.transactions = transactions;
-                categories = data.categories || categories;
-                warehouses = data.warehouses || warehouses;
-                itemCounter = data.itemCounter || itemCounter;
-                transactionCounter = data.transactionCounter || transactionCounter;
-                applicationCounter = data.applicationCounter || applicationCounter;
-                logs = data.logs || logs;
-                applications = data.applications || applications;
+                console.log('Cloud data received:', data);
+                if (!data) {
+                    console.log('No data found in cloud.');
+                    return;
+                }
+
+                // Improved merge logic helper: cloud items take precedence, local additions are kept
+                function mergeStates(cloudArr, localArr) {
+                    const cloudList = Array.isArray(cloudArr) ? cloudArr : [];
+                    const localList = Array.isArray(localArr) ? localArr : [];
+                    const merged = [...cloudList];
+                    
+                    localList.forEach(localItem => {
+                        const cloudIndex = merged.findIndex(c => c.id === localItem.id);
+                        if (cloudIndex === -1) {
+                            // Local addition: keep it
+                            merged.push(localItem);
+                        } else {
+                            // Item exists in both: compare updatedAt if available
+                            const cloudUpdated = new Date(merged[cloudIndex].updatedAt || merged[cloudIndex].createdAt || 0);
+                            const localUpdated = new Date(localItem.updatedAt || localItem.createdAt || 0);
+                            if (localUpdated > cloudUpdated) {
+                                // Local is newer: update cloud item in merged list
+                                merged[cloudIndex] = localItem;
+                            }
+                        }
+                    });
+                    return merged;
+                }
+                
+                if (data.items) items = mergeStates(data.items, items);
+                if (data.transactions) {
+                    transactions = Array.isArray(data.transactions) ? data.transactions : Object.values(data.transactions);
+                    window.transactions = transactions;
+                }
+                if (data.categories) categories = data.categories;
+                if (data.warehouses) warehouses = data.warehouses;
+                
+                // Counters should take the maximum to avoid ID conflicts
+                itemCounter = Math.max(data.itemCounter || 0, itemCounter);
+                transactionCounter = Math.max(data.transactionCounter || 0, transactionCounter);
+                applicationCounter = Math.max(data.applicationCounter || 0, applicationCounter);
+                
+                if (data.logs) logs = Array.isArray(data.logs) ? data.logs : Object.values(data.logs);
+                if (data.applications) applications = mergeStates(data.applications, applications);
+                
+                // Optimized merge for recoveryKeys (handle Map format from cloud)
+                const cloudRKData = data.recoveryKeys;
+                let cloudRKList = [];
+                if (cloudRKData) {
+                    if (Array.isArray(cloudRKData)) {
+                        cloudRKList = cloudRKData;
+                    } else if (typeof cloudRKData === 'object') {
+                        cloudRKList = Object.values(cloudRKData);
+                    }
+                }
+                console.log('Processed Cloud RK List:', cloudRKList);
+                recoveryKeys = mergeStates(cloudRKList, recoveryKeys);
+                console.log('Final Merged RK List:', recoveryKeys);
+
                 cloudLastSync = Date.now();
                 updateCloudStatusText();
                 normalizeInventory();
@@ -3759,28 +5488,60 @@
                 renderReports();
                 renderSettings();
                 renderLogs();
-            } catch (e) {}
+                renderRecoveryKeys();
+            } catch (e) {
+                console.error('Fetch cloud data failed:', e);
+            }
         }
         function pushCloudData() {
-            if (!cloudEnabled || !cloudRootRef) return;
+            if (!cloudEnabled || !cloudRootRef) {
+                console.log('Cloud sync skipped: cloud not enabled or ref missing.');
+                return;
+            }
+            if (!firebaseUser) {
+                console.log('Cloud sync skipped: user not authenticated.');
+                return;
+            }
+
+            console.log('Pushing all data to cloud for user:', firebaseUser.uid);
+            
+            // Transform recoveryKeys array to Map for Firebase optimization
+            const recoveryKeysMap = {};
+            if (Array.isArray(recoveryKeys)) {
+                recoveryKeys.forEach(rk => {
+                    if (rk.id) recoveryKeysMap[rk.id] = rk;
+                });
+            }
+
             const payload = {
-                items,
-                transactions,
-                categories,
-                warehouses,
-                itemCounter,
-                transactionCounter,
-                applicationCounter,
-                logs,
-                applications,
+                items: items || [],
+                transactions: transactions || [],
+                categories: categories || [],
+                warehouses: warehouses || [],
+                itemCounter: itemCounter || 1000,
+                transactionCounter: transactionCounter || 1000,
+                applicationCounter: applicationCounter || 1003,
+                logs: logs || [],
+                applications: applications || [],
+                recoveryKeys: recoveryKeysMap,
                 updatedAt: new Date().toISOString()
             };
+            
+            console.log('Sync payload:', payload);
+
             try {
+                // Use .set() to ensure the entire wdInventory state is correctly synced
                 cloudRootRef.set(payload).then(() => {
+                    console.log('Push successful to:', cloudRootRef.toString());
                     cloudLastSync = Date.now();
                     updateCloudStatusText();
-                }).catch(() => {});
-            } catch (e) {}
+                }).catch((err) => {
+                    console.error('Push failed:', err);
+                    showToast('云端同步失败', 'error');
+                });
+            } catch (e) {
+                console.error('Push error:', e);
+            }
         }
         
         // ========== Initialization ==========
@@ -3789,6 +5550,40 @@
             if (savedTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
+            
+            // Sidebar Toggle
+             const sidebar = document.querySelector('.sidebar');
+             const sidebarToggle = document.getElementById('sidebarToggle');
+             if (sidebarToggle && sidebar) {
+                 sidebarToggle.addEventListener('click', () => {
+                     sidebar.classList.toggle('collapsed');
+                     localStorage.setItem('wdSidebarCollapsed', sidebar.classList.contains('collapsed'));
+                 });
+                 
+                 // Restore state
+                 if (localStorage.getItem('wdSidebarCollapsed') === 'true') {
+                     sidebar.classList.add('collapsed');
+                 }
+             }
+
+             // Section Toggle
+             document.querySelectorAll('.nav-title').forEach(title => {
+                 title.addEventListener('click', () => {
+                     const section = title.parentElement;
+                     section.classList.toggle('collapsed');
+                     
+                     // Store state
+                     const sectionId = title.textContent.trim();
+                     localStorage.setItem(`wdSectionCollapsed_${sectionId}`, section.classList.contains('collapsed'));
+                 });
+                 
+                 // Restore state
+                 const sectionId = title.textContent.trim();
+                 if (localStorage.getItem(`wdSectionCollapsed_${sectionId}`) === 'true') {
+                     title.parentElement.classList.add('collapsed');
+                 }
+             });
+            
             initFirebase();
         });
         
@@ -4054,6 +5849,8 @@
                 renderLogs();
             } else if (page === 'application-records') {
                 renderApplications();
+            } else if (page === 'recovery-keys') {
+                renderRecoveryKeys();
             } else if (page === 'dashboard') {
                 updateDashboard();
             }
@@ -4111,17 +5908,30 @@
             
             // Render stock details list
             const stockDetailsList = document.getElementById('stockDetailsList');
+            const stockDetailsWrapper = document.getElementById('stockDetailsWrapper');
             if (stockDetailsList) {
                 const stockedItems = items.filter(item => item.stock > 0).sort((a, b) => b.stock - a.stock);
                 if (stockedItems.length === 0) {
                     stockDetailsList.innerHTML = '<div style="font-size: 12px; color: var(--color-text-tertiary); text-align: center; padding: 10px;">暂无库存</div>';
+                    if (stockDetailsWrapper) stockDetailsWrapper.classList.remove('has-scroll');
                 } else {
                     stockDetailsList.innerHTML = stockedItems.map(item => `
                         <div class="stat-details-item">
                             <span class="stat-details-name" title="${item.name}">${item.name}</span>
-                            <span class="stat-details-count">${item.stock} ${item.unit}</span>
+                            <span class="stat-details-count">${item.stock} <span style="font-size: 12px; font-weight: normal;">${item.unit}</span></span>
                         </div>
                     `).join('');
+                    
+                    // Check if scrollable
+                    if (stockDetailsWrapper) {
+                        setTimeout(() => {
+                            if (stockDetailsList.scrollHeight > stockDetailsList.clientHeight) {
+                                stockDetailsWrapper.classList.add('has-scroll');
+                            } else {
+                                stockDetailsWrapper.classList.remove('has-scroll');
+                            }
+                        }, 0);
+                    }
                 }
             }
 
@@ -4430,55 +6240,106 @@
         }
         
         // ========== Items Management ==========
-        function renderItems() {
-            renderItemsGrid();
-            renderItemsTable();
-        }
-        
-        function renderItemsGrid() {
-            const container = document.getElementById('itemsGridView');
+        function filterItems() {
+            const category = document.getElementById('filterCategory').value;
+            const warehouse = document.getElementById('filterWarehouse').value;
+            const searchTerm = document.getElementById('itemSearchInput')?.value.toLowerCase() || '';
             
-            if (items.length === 0) {
+            let filtered = items;
+            
+            if (category) {
+                filtered = filtered.filter(i => i.category === category);
+            }
+            if (warehouse) {
+                filtered = filtered.filter(i => i.warehouse === warehouse);
+            }
+            if (searchTerm) {
+                filtered = filtered.filter(i => 
+                    (i.name || '').toLowerCase().includes(searchTerm) ||
+                    (i.code || '').toLowerCase().includes(searchTerm) ||
+                    (i.category || '').toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Render with filtered items
+            renderItemsGridWithData(filtered);
+            renderItemsTableWithData(filtered);
+        }
+
+        function renderItems() {
+            filterItems();
+        }
+
+        function renderItemsGridWithData(data) {
+            const container = document.getElementById('itemsGridView');
+            if (!container) return;
+            
+            if (data.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📦</div>
-                        <p class="empty-title">暂无物品</p>
-                        <p class="empty-text">点击"添加物品"开始管理库存</p>
+                        <p class="empty-title">未找到物品</p>
                     </div>
                 `;
                 return;
             }
             
+            const categoryIcons = {
+                'IT设备': '💻',
+                '办公用品': '📎',
+                '工具设备': '🛠️',
+                '生产物料': '📦'
+            };
+
             let html = '';
-            items.forEach(item => {
+            data.forEach(item => {
                 const status = getStockStatus(item);
-                const statusBadge = getStatusBadge(status);
-                const totalValue = item.stock * (item.price || 0);
-                const totalValueHtml = totalValue > 0 ? `
-                                <div style="font-size: 14px; font-weight: 500; margin-top: 4px;">
-                                    $${totalValue.toFixed(2)}
-                                </div>` : '';
+                const statusText = status === 'danger' ? '缺货' : status === 'warning' ? '低库存' : '正常';
+                const statusClass = status === 'danger' ? 'inv-stock-status-danger' : status === 'warning' ? 'inv-stock-status-warning' : 'inv-stock-status-success';
+                const statusColor = status === 'danger' ? 'var(--status-error, #ef4444)' : status === 'warning' ? 'var(--color-warning)' : 'var(--color-success)';
                 
                 html += `
-                    <div class="item-card" onclick="editItem('${item.id}')">
-                        <div class="item-card-header">
-                            <div>
-                                <div class="item-id">${item.code}</div>
-                                <div class="item-name">${item.name}</div>
-                                <div class="item-category">${item.category}</div>
+                    <div class="asset-card" onclick="editItem('${item.id}')">
+                        <div class="asset-card-header">
+                            <div class="asset-icon-box">${categoryIcons[item.category] || '📦'}</div>
+                            <div class="asset-title-box">
+                                <div class="asset-name">${item.name || '未命名物品'}</div>
+                                <div class="asset-code">${item.code}</div>
                             </div>
-                            ${statusBadge}
                         </div>
-                        <div class="item-stock">
-                            <div>
-                                <div class="stock-label">当前库存</div>
-                                <div class="stock-value" style="color: ${status === 'danger' ? 'var(--color-danger)' : status === 'warning' ? 'var(--color-warning)' : 'var(--color-success)'}">
-                                    ${item.stock} ${item.unit}
+                        
+                        <div class="asset-card-body">
+                            <div class="asset-main-info">
+                                <div class="asset-stock-box">
+                                    <span class="asset-info-label">当前库存</span>
+                                    <div>
+                                        <span class="asset-stock-value" style="color: ${statusColor}">${item.stock}</span>
+                                        <span class="asset-stock-unit">${item.unit}</span>
+                                    </div>
+                                </div>
+                                <span class="asset-status-chip ${statusClass}">${statusText}</span>
+                            </div>
+                            
+                            <div class="asset-info-grid">
+                                <div class="asset-info-item">
+                                    <span class="asset-info-label">类别</span>
+                                    <span class="asset-info-value">${item.category || '-'}</span>
+                                </div>
+                                <div class="asset-info-item">
+                                    <span class="asset-info-label">仓库</span>
+                                    <span class="asset-info-value">${item.warehouse || '-'}</span>
                                 </div>
                             </div>
-                            <div style="text-align: right;">
-                                <div class="stock-label">${item.warehouse}</div>
-                                ${totalValueHtml}
+                        </div>
+                        
+                        <div class="asset-card-footer">
+                            <div class="asset-action-group">
+                                <button class="asset-mini-btn" onclick="event.stopPropagation(); editItem('${item.id}')" title="编辑">📝</button>
+                                <button class="asset-mini-btn danger" onclick="event.stopPropagation(); deleteItem('${item.id}')" title="删除">🗑️</button>
+                            </div>
+                            <div class="inv-last-update">
+                                <span>🕒</span>
+                                ${new Date(item.updatedAt || item.createdAt).toLocaleDateString('zh-CN')}
                             </div>
                         </div>
                     </div>
@@ -4487,18 +6348,19 @@
             
             container.innerHTML = html;
         }
-        
-        function renderItemsTable() {
+
+        function renderItemsTableWithData(data) {
             const tbody = document.getElementById('itemsTableBody');
             const paginationContainer = document.getElementById('itemsTablePagination');
+            if (!tbody) return;
             
-            if (items.length === 0) {
+            if (data.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="9" style="text-align: center; padding: var(--space-2xl);">
                             <div class="empty-state">
                                 <div class="empty-icon">📦</div>
-                                <p class="empty-title">暂无物品</p>
+                                <p class="empty-title">未找到物品</p>
                             </div>
                         </td>
                     </tr>
@@ -4507,42 +6369,32 @@
                 return;
             }
             
-            const total = items.length;
+            const total = data.length;
             const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
             if (itemsPage > totalPages) itemsPage = totalPages;
             const start = (itemsPage - 1) * PAGE_SIZE;
-            const pageItems = items.slice(start, start + PAGE_SIZE);
+            const pageItems = data.slice(start, start + PAGE_SIZE);
             
             let html = '';
             pageItems.forEach(item => {
                 const status = getStockStatus(item);
-                const hasName = item.name && String(item.name).trim().length > 0;
-                const hasCategory = item.category && String(item.category).trim().length > 0;
-                
-                const nameCell = hasName
-                    ? `<span class="data-chip data-chip-item">${item.name}</span>`
-                    : `<span class="data-chip" style="opacity: 0.5;">无名称</span>`;
-                    
-                const categoryCell = hasCategory
-                    ? `<span class="data-chip data-chip-category">${item.category}</span>`
-                    : `<span class="data-chip" style="opacity: 0.5;">无类别</span>`;
-
                 const statusText = status === 'danger' ? '缺货' : status === 'warning' ? '低库存' : '正常';
                 const statusClass = status === 'danger' ? 'data-chip-status-danger' : status === 'warning' ? 'data-chip-status-warning' : 'data-chip-status-success';
-                const statusBadge = `<span class="data-chip ${statusClass}">${statusText}</span>`;
                 
                 html += `
                     <tr>
                         <td><span class="data-chip data-chip-code">${item.code}</span></td>
-                        <td>${nameCell}</td>
-                        <td>${categoryCell}</td>
+                        <td><span class="data-chip data-chip-item">${item.name}</span></td>
+                        <td><span class="data-chip data-chip-category">${item.category}</span></td>
                         <td><span class="data-chip data-chip-stock">${item.stock}</span></td>
                         <td><span class="data-chip data-chip-unit">${item.unit}</span></td>
                         <td><span class="data-chip data-chip-warehouse">${item.warehouse}</span></td>
-                        <td>${statusBadge}</td>
+                        <td><span class="data-chip ${statusClass}">${statusText}</span></td>
                         <td>
-                            <button class="btn btn-ghost btn-sm action-chip action-edit" onclick="editItem('${item.id}')">编辑</button>
-                            <button class="btn btn-ghost btn-sm action-chip action-delete" onclick="deleteItem('${item.id}')">删除</button>
+                            <div class="asset-action-group">
+                                <button class="asset-mini-btn" onclick="editItem('${item.id}')" title="编辑">📝</button>
+                                <button class="asset-mini-btn danger" onclick="deleteItem('${item.id}')" title="删除">🗑️</button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -4561,6 +6413,8 @@
             const detailBody = document.getElementById('deviceSerialModalBody');
             
             if (!container || !addSerialBtn || !detailTitle || !detailBody) return;
+
+            const searchTerm = document.getElementById('deviceSearchInput')?.value.toLowerCase() || '';
             
             if (items.length === 0) {
                 container.innerHTML = `
@@ -4580,38 +6434,81 @@
                 addSerialBtn.style.display = 'none';
                 return;
             }
+
+            // Filter logic
+            let filtered = items;
+            if (searchTerm) {
+                filtered = filtered.filter(i => 
+                    (i.name || '').toLowerCase().includes(searchTerm) ||
+                    (i.code || '').toLowerCase().includes(searchTerm) ||
+                    (i.category || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <p class="empty-title">未找到相关设备</p>
+                    </div>
+                `;
+                return;
+            }
             
+            const categoryIcons = {
+                'IT设备': '💻',
+                '办公用品': '📎',
+                '工具设备': '🛠️',
+                '生产物料': '📦'
+            };
+
             let html = '';
-            items.forEach(item => {
+            filtered.forEach(item => {
                 const status = getStockStatus(item);
-                const statusBadge = getStatusBadge(status);
-                const totalValue = item.stock * (item.price || 0);
-                const totalValueHtml = totalValue > 0 ? `
-                                <div style="font-size: 14px; font-weight: 500; margin-top: 4px;">
-                                    $${totalValue.toFixed(2)}
-                                </div>` : '';
+                const statusText = status === 'danger' ? '缺货' : status === 'warning' ? '低库存' : '正常';
+                const statusClass = status === 'danger' ? 'inv-stock-status-danger' : status === 'warning' ? 'inv-stock-status-warning' : 'inv-stock-status-success';
+                const statusColor = status === 'danger' ? 'var(--status-error, #ef4444)' : status === 'warning' ? 'var(--color-warning)' : 'var(--color-success)';
+                const serialCount = (item.serials || []).length;
                 
                 html += `
-                    <div class="item-card" onclick="openDeviceSerialModal('${item.id}')">
-                        <div class="item-card-header">
-                            <div>
-                                <div class="item-id">${item.code}</div>
-                                <div class="item-name">${item.name}</div>
-                                <div class="item-category">${item.category}</div>
+                    <div class="asset-card" onclick="openDeviceSerialModal('${item.id}')">
+                        <div class="asset-card-header">
+                            <div class="asset-icon-box">${categoryIcons[item.category] || '📦'}</div>
+                            <div class="asset-title-box">
+                                <div class="asset-name">${item.name || '未命名物品'}</div>
+                                <div class="asset-code">${item.code}</div>
                             </div>
-                            ${statusBadge}
                         </div>
-                        <div class="item-stock">
-                            <div>
-                                <div class="stock-label">当前库存</div>
-                                <div class="stock-value" style="color: ${status === 'danger' ? 'var(--color-danger)' : status === 'warning' ? 'var(--color-warning)' : 'var(--color-success)'}">
-                                    ${item.stock} ${item.unit}
+                        
+                        <div class="asset-card-body">
+                            <div class="asset-main-info">
+                                <div class="asset-stock-box">
+                                    <span class="asset-info-label">序列号登记数</span>
+                                    <div style="display: flex; align-items: baseline;">
+                                        <span class="asset-stock-value" style="color: ${statusColor};">${serialCount}</span>
+                                        <span class="asset-stock-unit">条记录</span>
+                                    </div>
+                                </div>
+                                <span class="asset-status-chip ${statusClass}">${statusText}</span>
+                            </div>
+                            
+                            <div class="asset-info-grid">
+                                <div class="asset-info-item">
+                                    <span class="asset-info-label">当前库存</span>
+                                    <span class="asset-info-value" style="color: ${statusColor}; font-weight: 700;">${item.stock} ${item.unit}</span>
+                                </div>
+                                <div class="asset-info-item">
+                                    <span class="asset-info-label">仓库</span>
+                                    <span class="asset-info-value">${item.warehouse || '-'}</span>
                                 </div>
                             </div>
-                            <div style="text-align: right;">
-                                <div class="stock-label">${item.warehouse}</div>
-                                ${totalValueHtml}
+                        </div>
+                        
+                        <div class="asset-card-footer">
+                            <div class="inv-last-update">
+                                <span>🔍</span> 点击查看或登记序列号
                             </div>
+                            <div class="asset-mini-btn">➡️</div>
                         </div>
                     </div>
                 `;
@@ -4730,7 +6627,8 @@
         
         function isAttachmentRequiredItem(item) {
             if (!item) return false;
-            return item.code === 'WD-INV-1001';
+            // Only require attachment for specific item names/categories or if explicitly marked
+            return item.name === 'Yubikey' || item.category === 'Security Key';
         }
         
         function syncSerialStockForItem(item) {
@@ -5024,9 +6922,13 @@
             if (view === 'grid') {
                 document.getElementById('itemsGridView').style.display = 'grid';
                 document.getElementById('itemsTableView').style.display = 'none';
+                document.getElementById('gridViewBtn').classList.add('active');
+                document.getElementById('tableViewBtn').classList.remove('active');
             } else {
                 document.getElementById('itemsGridView').style.display = 'none';
                 document.getElementById('itemsTableView').style.display = 'block';
+                document.getElementById('gridViewBtn').classList.remove('active');
+                document.getElementById('tableViewBtn').classList.add('active');
             }
         }
         
@@ -5102,14 +7004,44 @@
         function renderPagination(currentPage, totalItems, pageSize, changeFnName) {
             const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
             if (totalItems === 0) return '';
+            
             const disabledPrev = currentPage <= 1 ? 'disabled' : '';
             const disabledNext = currentPage >= totalPages ? 'disabled' : '';
+            
+            let pagesHtml = '';
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? 'active' : '';
+                pagesHtml += `<button class="pagination-button ${activeClass}" onclick="${changeFnName}(${i})">${i}</button>`;
+            }
+            
             return `
-                <div style="display:flex;align-items:center;gap:8px;">
+                <div class="pagination-container" style="display:flex;align-items:center;gap:12px;user-select:none;">
                     <span style="font-size:12px;color:var(--color-text-tertiary);">共 ${totalItems} 条</span>
-                    <button class="pagination-button" ${disabledPrev} onclick="${changeFnName}(${currentPage - 1})">上一页</button>
-                    <span style="font-size:12px;color:var(--color-text-tertiary);">第 ${currentPage} / ${totalPages} 页</span>
-                    <button class="pagination-button" ${disabledNext} onclick="${changeFnName}(${currentPage + 1})">下一页</button>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <button class="pagination-button" ${disabledPrev} onclick="${changeFnName}(${currentPage - 1})" title="上一页">
+                            <span style="font-size: 14px;">←</span>
+                        </button>
+                        ${startPage > 1 ? `
+                            <button class="pagination-button" onclick="${changeFnName}(1)">1</button>
+                            ${startPage > 2 ? '<span style="color:var(--color-text-tertiary);">...</span>' : ''}
+                        ` : ''}
+                        ${pagesHtml}
+                        ${endPage < totalPages ? `
+                            ${endPage < totalPages - 1 ? '<span style="color:var(--color-text-tertiary);">...</span>' : ''}
+                            <button class="pagination-button" onclick="${changeFnName}(${totalPages})">${totalPages}</button>
+                        ` : ''}
+                        <button class="pagination-button" ${disabledNext} onclick="${changeFnName}(${currentPage + 1})" title="下一页">
+                            <span style="font-size: 14px;">→</span>
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -5174,49 +7106,63 @@
             showToast('物品删除成功', 'success');
         }
         
-        function filterItems() {
-            const category = document.getElementById('filterCategory').value;
-            const warehouse = document.getElementById('filterWarehouse').value;
-            const status = document.getElementById('filterStatus').value;
-            
-            let filtered = items;
-            
-            if (category) {
-                filtered = filtered.filter(i => i.category === category);
-            }
-            if (warehouse) {
-                filtered = filtered.filter(i => i.warehouse === warehouse);
-            }
-            if (status) {
-                filtered = filtered.filter(i => getStockStatus(i) === status);
-            }
-            
-            // Temporarily replace items for rendering
-            const originalItems = items;
-            items = filtered;
-            renderItems();
-            items = originalItems;
-        }
-        
         function clearFilters() {
             document.getElementById('filterCategory').value = '';
             document.getElementById('filterWarehouse').value = '';
-            document.getElementById('filterStatus').value = '';
+            if (document.getElementById('itemSearchInput')) document.getElementById('itemSearchInput').value = '';
             renderItems();
         }
         
         // ========== Transactions ==========
+        function updateTransactionStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayTransactions = transactions.filter(t => t.date === today);
+            const inboundToday = todayTransactions.filter(t => t.type === 'inbound').reduce((acc, t) => acc + t.quantity, 0);
+            const outboundToday = todayTransactions.filter(t => t.type === 'outbound').reduce((acc, t) => acc + t.quantity, 0);
+            
+            document.getElementById('t-stat-today').textContent = todayTransactions.length;
+            document.getElementById('t-stat-inbound').textContent = inboundToday;
+            document.getElementById('t-stat-outbound').textContent = outboundToday;
+        }
+
         function renderTransactions() {
             const tbody = document.getElementById('transactionsTableBody');
             const paginationContainer = document.getElementById('transactionsTablePagination');
             
+            if (document.getElementById('t-stat-today')) {
+                updateTransactionStats();
+            }
+            
             let filtered = transactions;
+            
+            // Tab filter
             if (currentTransactionTab !== 'all') {
-                if (currentTransactionTab === 'pending') {
-                    filtered = transactions.filter(t => t.status === 'pending');
-                } else {
-                    filtered = transactions.filter(t => t.type === currentTransactionTab);
-                }
+                filtered = filtered.filter(t => t.type === currentTransactionTab);
+            }
+            
+            // Search filter
+            const searchInput = document.getElementById('t-search-input');
+            const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
+            if (searchQuery) {
+                filtered = filtered.filter(t => {
+                    const item = items.find(i => i.id === t.itemId);
+                    return t.id.toLowerCase().includes(searchQuery) || 
+                           (item && item.name.toLowerCase().includes(searchQuery)) ||
+                           t.handler.toLowerCase().includes(searchQuery) ||
+                           (t.department && t.department.toLowerCase().includes(searchQuery));
+                });
+            }
+            
+            // Date filter
+            const dateFromEl = document.getElementById('filterDateFrom');
+            const dateToEl = document.getElementById('filterDateTo');
+            const dateFrom = dateFromEl ? dateFromEl.value : '';
+            const dateTo = dateToEl ? dateToEl.value : '';
+            if (dateFrom) {
+                filtered = filtered.filter(t => t.date >= dateFrom);
+            }
+            if (dateTo) {
+                filtered = filtered.filter(t => t.date <= dateTo);
             }
             
             if (filtered.length === 0) {
@@ -5225,7 +7171,7 @@
                         <td colspan="9" style="text-align: center; padding: var(--space-2xl);">
                             <div class="empty-state">
                                 <div class="empty-icon">📝</div>
-                                <p class="empty-title">暂无记录</p>
+                                <p class="empty-title">暂无符合条件的记录</p>
                             </div>
                         </td>
                     </tr>
@@ -5245,26 +7191,45 @@
                 const item = items.find(i => i.id === t.itemId);
                 const typeIcon = t.type === 'inbound' ? '📥' : '📤';
                 const typeText = t.subType || (t.type === 'inbound' ? '入库' : '出库');
-                const typeClass = t.type === 'inbound' ? 'data-chip-type-in' : 'data-chip-type-out';
-                const typeBadge = `<span class="data-chip ${typeClass}">${typeIcon} ${typeText}</span>`;
+                const typeClass = t.type === 'inbound' ? 't-type-inbound' : 't-type-outbound';
                 const statusBadge = '<span class="data-chip data-chip-status-done">已完成</span>';
                 
                 html += `
-                    <tr>
+                    <tr class="t-row">
                         <td><span class="data-chip data-chip-id">${t.id}</span></td>
-                        <td>${t.requestId ? `<span class="data-chip data-chip-request">${t.requestId}</span>` : '-'}</td>
-                        <td>${typeBadge}</td>
-                        <td><span class="data-chip data-chip-item">${item ? item.name : '未知物品'}</span></td>
-                        <td>${t.type === 'outbound' && t.serialNumber ? `<span class="data-chip data-chip-serial">${t.serialNumber}</span>` : '-'}</td>
-                        <td><span class="data-chip data-chip-quantity">${t.quantity} ${item ? item.unit : ''}</span></td>
-                        <td><span class="data-chip data-chip-handler">${t.handler}</span></td>
-                        <td><span class="data-chip data-chip-dept">${t.department || '-'}</span></td>
-                        <td><span class="data-chip data-chip-date">${new Date(t.date).toLocaleDateString('zh-CN')}</span></td>
+                        <td>
+                            <div class="t-type-badge ${typeClass}">
+                                <span>${typeIcon}</span>
+                                <span>${typeText}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="t-item-info">
+                                <span class="t-item-name">${item ? item.name : '未知物品'}</span>
+                                <span class="t-item-sub">${item ? item.category : '-'} | ${item ? item.code : '-'}</span>
+                            </div>
+                        </td>
+                        <td>${t.serialNumber ? `<span class="data-chip data-chip-serial">${t.serialNumber}</span>` : '<span style="color: var(--color-text-quaternary); font-size: 12px;">无序列号</span>'}</td>
+                        <td><span class="t-amount" style="color: ${t.type === 'inbound' ? 'var(--color-success)' : 'var(--color-danger)'}">${t.type === 'inbound' ? '+' : '-'}${t.quantity}</span> <span style="font-size: 11px; color: var(--color-text-tertiary);">${item ? item.unit : ''}</span></td>
+                        <td>
+                            <div class="t-item-info">
+                                <span class="t-item-name">${t.handler}</span>
+                                <span class="t-item-sub">${t.department || '未填写部门'}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="t-date-cell">
+                                <span class="t-date-main">${new Date(t.date).toLocaleDateString('zh-CN')}</span>
+                                <span class="t-date-sub">${t.date}</span>
+                            </div>
+                        </td>
                         <td>${statusBadge}</td>
                         <td>
-                            <button class="btn btn-ghost btn-sm action-chip action-view" onclick="viewTransaction('${t.id}')">详情</button>
-                            <button class="btn btn-ghost btn-sm action-chip action-edit" onclick="editTransaction('${t.id}')">编辑</button>
-                            <button class="btn btn-ghost btn-sm action-chip action-delete" onclick="deleteTransaction('${t.id}')">删除</button>
+                            <div class="t-actions" style="justify-content: flex-end;">
+                                <button class="btn btn-ghost btn-sm action-chip action-view" onclick="viewTransaction('${t.id}')">详情</button>
+                                <button class="btn btn-ghost btn-sm action-chip action-edit" onclick="editTransaction('${t.id}')">编辑</button>
+                                <button class="btn btn-ghost btn-sm action-chip action-delete" onclick="deleteTransaction('${t.id}')">删除</button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -5278,19 +7243,14 @@
         
         function switchTransactionTab(tab) {
             currentTransactionTab = tab;
-            const tabs = Array.from(document.querySelectorAll('.tabs .tab'));
-            tabs.forEach(t => t.classList.remove('active'));
-            
-            // 根据 tab 类型找到对应的索引
-            let index = 0;
-            if (tab === 'all') index = 0;
-            else if (tab === 'inbound') index = 1;
-            else if (tab === 'outbound') index = 2;
-            else if (tab === 'pending') index = 3;
-            
-            if (tabs[index]) {
-                tabs[index].classList.add('active');
-            }
+            const segmentItems = document.querySelectorAll('.segmented-control .segment-item');
+            segmentItems.forEach(item => {
+                if (item.getAttribute('onclick').includes(`'${tab}'`)) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
             
             transactionsPage = 1;
             renderTransactions();
@@ -5387,12 +7347,7 @@
             
             // 确保用户能看到新记录：如果是新增，则跳转到“全部”标签页并重置页码
             if (!editingId) {
-                currentTransactionTab = 'all';
-                transactionsPage = 1;
-                // 更新 UI 上的标签激活状态
-                const tabs = document.querySelectorAll('.tabs .tab');
-                tabs.forEach(t => t.classList.remove('active'));
-                if (tabs[0]) tabs[0].classList.add('active');
+                switchTransactionTab('all');
             }
             
             renderTransactions();
@@ -5607,12 +7562,7 @@
                     
                     // 确保用户能看到新记录：如果是新增，则跳转到“全部”标签页并重置页码
                     if (!editingId) {
-                        currentTransactionTab = 'all';
-                        transactionsPage = 1;
-                        // 更新 UI 上的标签激活状态
-                        const tabs = document.querySelectorAll('.tabs .tab');
-                        tabs.forEach(t => t.classList.remove('active'));
-                        if (tabs[0]) tabs[0].classList.add('active');
+                        switchTransactionTab('all');
                     }
                     
                     renderTransactions();
@@ -5851,7 +7801,6 @@
                 openModal('outboundModal');
             }
         }
-        
         async function deleteTransaction(id) {
             const index = transactions.findIndex(t => t.id === id);
             if (index === -1) return;
@@ -5910,20 +7859,42 @@
         }
         
         function filterTransactions() {
-            // Implement date range filtering
+            transactionsPage = 1;
             renderTransactions();
         }
         
         function clearTransactionFilters() {
-            document.getElementById('filterDateFrom').value = '';
-            document.getElementById('filterDateTo').value = '';
+            const dateFrom = document.getElementById('filterDateFrom');
+            const dateTo = document.getElementById('filterDateTo');
+            const searchInput = document.getElementById('t-search-input');
+            
+            if (dateFrom) dateFrom.value = '';
+            if (dateTo) dateTo.value = '';
+            if (searchInput) searchInput.value = '';
+            
+            transactionsPage = 1;
             renderTransactions();
         }
         
         // ========== Inventory ==========
+        function filterInventoryByStatus(status) {
+            inventoryStatusFilter = status;
+            inventoryPage = 1;
+            
+            // Update UI
+            document.querySelectorAll('.inventory-filter-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.getAttribute('data-filter') === status);
+            });
+            
+            renderInventory();
+        }
+
         function renderInventory() {
-            const tbody = document.getElementById('inventoryTableBody');
+            const container = document.getElementById('inventoryCardsContainer');
             const paginationContainer = document.getElementById('inventoryTablePagination');
+            if (!container) return;
+
+            const searchTerm = document.getElementById('inventorySearch')?.value.toLowerCase() || '';
             
             // Update stats
             const inStock = items.filter(i => i.stock > i.minStock).length;
@@ -5943,61 +7914,117 @@
                 alertDiv.style.display = 'none';
             }
             
-            if (items.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9" style="text-align: center; padding: var(--space-2xl);">
-                            <div class="empty-state">
-                                <div class="empty-icon">📦</div>
-                                <p class="empty-title">暂无库存</p>
-                            </div>
-                        </td>
-                    </tr>
+            // Filter logic
+            let filtered = items;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(i => 
+                    (i.name || '').toLowerCase().includes(searchTerm) ||
+                    (i.code || '').toLowerCase().includes(searchTerm) ||
+                    (i.category || '').toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (inventoryStatusFilter !== 'all') {
+                filtered = filtered.filter(i => {
+                    const status = getStockStatus(i);
+                    if (inventoryStatusFilter === 'normal') return status === 'success';
+                    if (inventoryStatusFilter === 'warning') return status === 'warning';
+                    if (inventoryStatusFilter === 'danger') return status === 'danger';
+                    return true;
+                });
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1; padding: var(--space-2xl);">
+                        <div class="empty-icon">📦</div>
+                        <p class="empty-title">未找到相关库存物品</p>
+                    </div>
                 `;
                 if (paginationContainer) paginationContainer.innerHTML = '';
                 return;
             }
             
-            const total = items.length;
+            const total = filtered.length;
             const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
             if (inventoryPage > totalPages) inventoryPage = totalPages;
             const start = (inventoryPage - 1) * PAGE_SIZE;
-            const pageItems = items.slice(start, start + PAGE_SIZE);
+            const pageItems = filtered.slice(start, start + PAGE_SIZE);
             
-            let html = '';
-            pageItems.forEach(item => {
-                const status = getStockStatus(item);
-                const hasName = item.name && String(item.name).trim().length > 0;
-                const hasCategory = item.category && String(item.category).trim().length > 0;
-                
-                const nameCell = hasName
-                    ? `<span class="data-chip data-chip-item">${item.name}</span>`
-                    : `<span class="data-chip" style="opacity: 0.5;">无名称</span>`;
-                    
-                const categoryCell = hasCategory
-                    ? `<span class="data-chip data-chip-category">${item.category}</span>`
-                    : `<span class="data-chip" style="opacity: 0.5;">无类别</span>`;
+            const categoryIcons = {
+                'IT设备': '💻',
+                '办公用品': '📎',
+                '工具设备': '🛠️',
+                '生产物料': '📦'
+            };
 
+            container.innerHTML = pageItems.map(item => {
+                const status = getStockStatus(item);
                 const statusText = status === 'danger' ? '缺货' : status === 'warning' ? '低库存' : '正常';
-                const statusClass = status === 'danger' ? 'data-chip-status-danger' : status === 'warning' ? 'data-chip-status-warning' : 'data-chip-status-success';
-                const statusBadge = `<span class="data-chip ${statusClass}">${statusText}</span>`;
+                const statusClass = status === 'danger' ? 'inv-stock-status-danger' : status === 'warning' ? 'inv-stock-status-warning' : 'inv-stock-status-success';
                 
-                html += `
-                    <tr>
-                        <td><span class="data-chip data-chip-code">${item.code}</span></td>
-                        <td>${nameCell}</td>
-                        <td>${categoryCell}</td>
-                        <td><span class="data-chip data-chip-stock">${item.stock}</span></td>
-                        <td><span class="data-chip data-chip-min">${item.minStock}</span></td>
-                        <td><span class="data-chip data-chip-unit">${item.unit}</span></td>
-                        <td><span class="data-chip data-chip-warehouse">${item.warehouse}</span></td>
-                        <td>${statusBadge}</td>
-                        <td><span class="data-chip data-chip-date">${new Date(item.updatedAt).toLocaleDateString('zh-CN')}</span></td>
-                    </tr>
+                // Calculate progress bar percentage
+                let percentage = 0;
+                if (item.stock > 0) {
+                    // If stock is more than 2x minStock, show as 100% full
+                    percentage = Math.min(100, (item.stock / (item.minStock * 2 || 10)) * 100);
+                }
+                
+                const barColor = status === 'danger' ? 'var(--status-error, #ef4444)' : 
+                                 status === 'warning' ? 'var(--color-warning)' : 
+                                 'var(--color-success)';
+
+                const markerPos = item.minStock > 0 ? (item.minStock / (item.minStock * 2 || 10)) * 100 : 0;
+
+                return `
+                    <div class="inventory-card">
+                        <div class="inv-card-header">
+                            <div class="inv-category-icon">${categoryIcons[item.category] || '📦'}</div>
+                            <div class="inv-card-title-box">
+                                <div class="inv-item-name">${item.name || '未命名物品'}</div>
+                                <div class="inv-item-code">${item.code}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="inv-card-body">
+                            <div class="inv-stock-display">
+                                <div class="inv-stock-label-row">
+                                    <div>
+                                        <span class="inv-stock-main">${item.stock}</span>
+                                        <span class="inv-stock-unit">${item.unit}</span>
+                                    </div>
+                                    <span class="inv-info-label">安全库存: ${item.minStock}</span>
+                                </div>
+                                <div class="inv-stock-progress-container">
+                                    <div class="inv-stock-progress-bar" style="width: ${percentage}%; background: ${barColor};"></div>
+                                    ${markerPos < 100 ? `<div class="inv-stock-min-marker" style="left: ${markerPos}%;"></div>` : ''}
+                                </div>
+                            </div>
+                            
+                            <div class="inv-card-info-grid">
+                                <div class="inv-info-item">
+                                    <span class="inv-info-label">类别</span>
+                                    <span class="inv-info-value">${item.category || '-'}</span>
+                                </div>
+                                <div class="inv-info-item">
+                                    <span class="inv-info-label">仓库</span>
+                                    <span class="inv-info-value">${item.warehouse || '-'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="inv-card-footer">
+                            <span class="inv-status-tag ${statusClass}">${statusText}</span>
+                            <div class="inv-last-update">
+                                <span>🕒</span>
+                                ${new Date(item.updatedAt).toLocaleDateString('zh-CN')}
+                            </div>
+                        </div>
+                    </div>
                 `;
-            });
+            }).join('');
             
-            tbody.innerHTML = html;
             if (paginationContainer) {
                 paginationContainer.innerHTML = renderPagination(inventoryPage, total, PAGE_SIZE, 'changeInventoryPage');
             }
@@ -6508,14 +8535,10 @@
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: var(--space-2xl);">
-                            <div class="empty-state">
-                                <div class="empty-icon">📝</div>
-                                <p class="empty-title">暂无申请记录</p>
-                            </div>
-                        </td>
-                    </tr>
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">📝</div>
+                        <p class="empty-title">暂无申请记录</p>
+                    </div>
                 `;
                 if (paginationContainer) paginationContainer.innerHTML = '';
                 return;
@@ -6544,27 +8567,48 @@
                 };
 
                 return `
-                    <tr>
-                        <td><span class="data-chip data-chip-request">${app.id}</span></td>
-                        <td><span class="data-chip data-chip-handler">${app.applicant}</span></td>
-                        <td><span class="data-chip data-chip-item">${app.device}</span></td>
-                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <span class="data-chip data-chip-desc" title="${app.description}">${app.description}</span>
-                        </td>
-                        <td><span class="data-chip data-chip-date">${new Date(app.date).toLocaleDateString('zh-CN')}</span></td>
-                        <td><span class="data-chip ${statusClasses[app.status] || ''}">${statusLabels[app.status] || app.status}</span></td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-ghost btn-sm action-chip action-edit" onclick="openEditApplicationModal('${app.id}')">编辑</button>
-                                <button class="btn btn-ghost btn-sm action-chip action-info" onclick="openNotificationModal('${app.id}')">通知</button>
-                                ${app.status === 'pending' ? `
-                                    <button class="btn btn-ghost btn-sm action-chip action-edit" onclick="handleApplicationStatus('${app.id}', 'approved')">批准</button>
-                                    <button class="btn btn-ghost btn-sm action-chip action-delete" onclick="handleApplicationStatus('${app.id}', 'rejected')">拒绝</button>
-                                ` : ''}
-                                <button class="btn btn-ghost btn-sm action-chip action-delete" onclick="deleteApplication('${app.id}')">删除</button>
+                    <div class="application-card status-${app.status}">
+                        <div class="app-card-top-section">
+                            <div class="app-status-badge-floating ${statusClasses[app.status] || ''}">
+                                ${statusLabels[app.status] || app.status}
                             </div>
-                        </td>
-                    </tr>
+                            <div class="app-device-display">
+                                <div class="app-device-icon-box">📦</div>
+                                <div class="app-device-name">${app.device}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="app-card-mid-section">
+                            <div class="app-info-item">
+                                <div class="app-info-icon">👤</div>
+                                <div class="app-info-content">
+                                    <span class="app-info-label">申请人</span>
+                                    <span class="app-info-value">${app.applicant}</span>
+                                </div>
+                            </div>
+                            <div class="app-info-item">
+                                <div class="app-info-icon">📅</div>
+                                <div class="app-info-content">
+                                    <span class="app-info-label">日期</span>
+                                    <span class="app-info-value">${new Date(app.date).toLocaleDateString('zh-CN')}</span>
+                                </div>
+                            </div>
+                            <div class="app-id-tag">
+                                <span># ${app.id}</span>
+                                <span style="cursor: pointer; opacity: 0.5;" onclick="copyToClipboard('${app.id}')" title="复制单号">📋</span>
+                            </div>
+                        </div>
+
+                        <div class="app-card-bottom-section">
+                            <button class="app-chip-btn blue" onclick="openEditApplicationModal('${app.id}')">编辑</button>
+                            <button class="app-chip-btn blue" onclick="openNotificationModal('${app.id}')">通知</button>
+                            ${app.status === 'pending' ? `
+                                <button class="app-chip-btn blue" onclick="handleApplicationStatus('${app.id}', 'approved')">批准</button>
+                                <button class="app-chip-btn red" onclick="handleApplicationStatus('${app.id}', 'rejected')">拒绝</button>
+                            ` : ''}
+                            <button class="app-chip-btn red" onclick="deleteApplication('${app.id}')">删除</button>
+                        </div>
+                    </div>
                 `;
             }).join('');
 
@@ -6573,9 +8617,208 @@
             }
         }
 
+        function filterRecoveryKeys() {
+            recoveryKeysPage = 1;
+            renderRecoveryKeys();
+        }
+
+        function renderRecoveryKeys() {
+            const grid = document.getElementById('recoveryKeysGrid');
+            const paginationContainer = document.getElementById('recoveryKeysPagination');
+            if (!grid) return;
+
+            const searchTerm = document.getElementById('recoveryKeySearch')?.value.toLowerCase() || '';
+            let filtered = recoveryKeys;
+
+            if (searchTerm) {
+                filtered = filtered.filter(rk => 
+                    (rk.model || '').toLowerCase().includes(searchTerm) ||
+                    (rk.serial || '').toLowerCase().includes(searchTerm) ||
+                    (rk.user || '').toLowerCase().includes(searchTerm) ||
+                    (rk.key || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">${searchTerm ? '🔍' : '🔑'}</div>
+                        <p class="empty-title">${searchTerm ? '未找到匹配的 Recovery Key' : '暂无 Recovery Key 记录'}</p>
+                        <p class="empty-text">${searchTerm ? '请尝试更改搜索词' : '点击右上角的“新增密钥”按钮来添加第一条记录。'}</p>
+                    </div>
+                `;
+                if (paginationContainer) paginationContainer.innerHTML = '';
+                return;
+            }
+
+            // Pagination logic
+            const total = filtered.length;
+            const totalPages = Math.ceil(total / RECOVERY_KEYS_PAGE_SIZE);
+            if (recoveryKeysPage > totalPages) recoveryKeysPage = totalPages;
+            if (recoveryKeysPage < 1) recoveryKeysPage = 1;
+
+            const start = (recoveryKeysPage - 1) * RECOVERY_KEYS_PAGE_SIZE;
+            const paginated = filtered.slice(start, start + RECOVERY_KEYS_PAGE_SIZE);
+
+            grid.innerHTML = paginated.map(rk => `
+                <div class="rk-card">
+                    <div class="rk-card-header">
+                        <div class="rk-header-left">
+                            <span class="rk-label-sm">分配用户</span>
+                            <div class="rk-user-row">
+                                <span class="rk-user-icon">👤</span>
+                                <span>${rk.user || '未分配'}</span>
+                            </div>
+                        </div>
+                        <div class="rk-header-actions">
+                            <button class="rk-icon-btn" onclick="openEditRecoveryKeyModal('${rk.id}')" title="编辑">📝</button>
+                            <button class="rk-icon-btn" onclick="deleteRecoveryKey('${rk.id}')" title="删除">🗑️</button>
+                        </div>
+                    </div>
+
+                    <div class="rk-card-mid">
+                        <div class="rk-info-group">
+                            <span class="rk-label-sm">设备型号</span>
+                            <div class="rk-info-row">
+                                <span>💻</span>
+                                <span>${rk.model || '-'}</span>
+                            </div>
+                        </div>
+                        <div class="rk-info-group">
+                            <span class="rk-label-sm">序列号</span>
+                            <div class="rk-info-row">
+                                <span style="font-size: 14px;">🔢</span>
+                                <span style="font-family: var(--font-mono);">${rk.serial || '-'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rk-key-container" onclick="copyToClipboard('${rk.key}')" title="点击复制">
+                        <span class="rk-key-title">Recovery Key</span>
+                        <div class="rk-key-value">${rk.key}</div>
+                        <span class="rk-copy-text">点击任意位置复制到剪贴板</span>
+                    </div>
+
+                    <div class="rk-card-footer">
+                        <div class="rk-date-text">
+                            ${rk.createdAt && !isNaN(new Date(rk.createdAt).getTime()) ? `创建于: ${new Date(rk.createdAt).toLocaleDateString('zh-CN')}` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            if (paginationContainer) {
+                paginationContainer.innerHTML = renderPagination(recoveryKeysPage, total, RECOVERY_KEYS_PAGE_SIZE, 'changeRecoveryKeysPage');
+            }
+        }
+
+
         function changeApplicationsPage(page) {
             applicationsPage = page;
             renderApplications();
+        }
+
+        function changeRecoveryKeysPage(page) {
+            recoveryKeysPage = page;
+            renderRecoveryKeys();
+            const grid = document.getElementById('recoveryKeysGrid');
+            if (grid) grid.scrollTop = 0;
+        }
+
+        function openAddRecoveryKeyModal() {
+            editingRecoveryKeyId = null;
+            document.getElementById('recoveryKeyModalTitle').textContent = '新增 Recovery Key';
+            document.getElementById('recoveryKeyForm').reset();
+            openModal('recoveryKeyModal');
+        }
+
+        function openEditRecoveryKeyModal(id) {
+            const rk = recoveryKeys.find(r => r.id == id);
+            if (!rk) return;
+
+            editingRecoveryKeyId = id;
+            document.getElementById('recoveryKeyModalTitle').textContent = '编辑 Recovery Key';
+            
+            document.getElementById('rkModel').value = rk.model || '';
+            document.getElementById('rkSerial').value = rk.serial || '';
+            document.getElementById('rkUser').value = rk.user || '';
+            document.getElementById('rkKey').value = rk.key || '';
+
+            openModal('recoveryKeyModal');
+        }
+
+        function saveRecoveryKey() {
+            const model = document.getElementById('rkModel').value.trim();
+            const serial = document.getElementById('rkSerial').value.trim();
+            const user = document.getElementById('rkUser').value.trim();
+            const key = document.getElementById('rkKey').value.trim();
+
+            const userEmail = firebaseUser ? firebaseUser.email : 'System';
+
+            if (!key) {
+                showToast('Recovery Key 不能为空', 'warning');
+                return;
+            }
+
+            if (editingRecoveryKeyId) {
+                // Update existing
+                const index = recoveryKeys.findIndex(rk => rk.id == editingRecoveryKeyId);
+                if (index !== -1) {
+                    const updatedRK = {
+                        ...recoveryKeys[index],
+                        model,
+                        serial,
+                        user,
+                        key,
+                        updatedAt: new Date().toISOString(),
+                        updatedBy: userEmail // Audit
+                    };
+                    recoveryKeys[index] = updatedRK;
+                    showToast('Recovery Key 已更新', 'success');
+                }
+            } else {
+                // Add new
+                const newRK = { 
+                    id: 'RK-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5), 
+                    model, 
+                    serial, 
+                    user, 
+                    key,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    updatedBy: userEmail // Audit
+                };
+                recoveryKeys.push(newRK);
+                showToast('Recovery Key 已保存', 'success');
+            }
+
+            saveData();
+            renderRecoveryKeys();
+            closeModal('recoveryKeyModal');
+        }
+
+        async function deleteRecoveryKey(id) {
+            const confirmed = await showConfirm({
+                title: '确认删除',
+                message: '确定要删除这条 Recovery Key 记录吗？',
+                okText: '确认删除',
+                type: 'danger'
+            });
+
+            if (confirmed) {
+                recoveryKeys = recoveryKeys.filter(rk => rk.id != id);
+                saveData();
+                renderRecoveryKeys();
+                showToast('记录已删除', 'success');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制到剪贴板', 'success');
+            }, () => {
+                showToast('复制失败', 'error');
+            });
         }
 
         function openAddApplicationModal() {
@@ -6604,7 +8847,6 @@
             document.getElementById('appApplicant').value = app.applicant;
             document.getElementById('appDevice').value = app.device;
             document.getElementById('appDate').value = app.date;
-            document.getElementById('appDescription').value = app.description;
 
             openModal('applicationModal');
         }
@@ -6614,9 +8856,8 @@
             const applicant = document.getElementById('appApplicant').value.trim();
             const device = document.getElementById('appDevice').value;
             const date = document.getElementById('appDate').value;
-            const description = document.getElementById('appDescription').value.trim();
 
-            if (!id || !applicant || !device || !date || !description) {
+            if (!id || !applicant || !device || !date) {
                 showToast('请填写所有必填项', 'warning');
                 return;
             }
@@ -6637,7 +8878,6 @@
                         applicant,
                         device,
                         date,
-                        description,
                         updatedAt: new Date().toISOString()
                     };
                     addLog('edit', `编辑申请记录: ${applicant} 申请 ${device}`, '', { id });
@@ -6655,7 +8895,6 @@
                     applicant,
                     device,
                     date,
-                    description,
                     status: 'pending',
                     createdAt: new Date().toISOString()
                 };
@@ -6789,6 +9028,7 @@
                 localStorage.setItem('wdInventoryApplicationCounter', applicationCounter);
                 localStorage.setItem('wdInventoryLogs', JSON.stringify(logs));
                 localStorage.setItem('wdInventoryApplications', JSON.stringify(applications));
+                localStorage.setItem('wdInventoryRecoveryKeys', JSON.stringify(recoveryKeys));
                 
                 // 更新设置页面的存储信息
                 if (document.getElementById('page-settings').classList.contains('active')) {
@@ -7019,6 +9259,9 @@
 
             const savedApplications = localStorage.getItem('wdInventoryApplications');
             if (savedApplications) applications = JSON.parse(savedApplications);
+
+            const savedRecoveryKeys = localStorage.getItem('wdInventoryRecoveryKeys');
+            if (savedRecoveryKeys) recoveryKeys = JSON.parse(savedRecoveryKeys);
         }
         
         function exportAllData() {
