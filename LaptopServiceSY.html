@@ -1,0 +1,2361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笔记本维修记录系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="icon/橘猫.svg" type="image/x-icon"> <!-- 网站图标 -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <!-- 添加 Firebase SDK（补充 Auth SDK） -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- 配置Tailwind自定义颜色和深色模式 -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        neutral: '#F5F7FA',
+                        danger: '#F53F3F',
+                        success: '#00B42A',
+                        statusResolved: '#00B42A',
+                        statusRepairing: '#FF7D00',
+                        statusWaiting: '#165DFF',
+                        statusUnrepairable: '#F53F3F'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .form-input-focus {
+                @apply focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+            }
+            .card-shadow {
+                @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
+            }
+            .dropdown-item-hover {
+                @apply hover:bg-primary/5 hover:text-primary transition-colors cursor-pointer;
+            }
+            .dropdown-active {
+                @apply bg-primary/10 text-primary font-medium;
+            }
+            .status-pill {
+                @apply px-3 py-1.5 inline-flex items-center text-xs font-medium rounded-full transition-all duration-200 cursor-pointer;
+            }
+            .status-pill-active {
+                @apply shadow-md scale-105;
+            }
+            .pagination-item {
+                @apply px-3 py-1.5 rounded border hover:border-primary hover:text-primary transition-colors;
+            }
+            .pagination-item.active {
+                @apply bg-primary text-white border-primary;
+            }
+            .table-container {
+                @apply w-full overflow-x-auto;
+            }
+            .full-width-table {
+                @apply w-full min-w-[900px] divide-y divide-gray-200 dark:divide-gray-700 table-auto;
+            }
+            .theme-toggle {
+                @apply relative w-12 h-6 rounded-full transition-colors duration-300 cursor-pointer flex items-center p-1;
+            }
+            .theme-toggle-circle {
+                @apply absolute w-4 h-4 rounded-full bg-white transition-transform duration-300 shadow-md;
+            }
+            .table-row-selected {
+                @apply bg-primary/5 dark:bg-primary/10;
+            }
+            /* 毛玻璃效果工具类 */
+            .glass-effect {
+                @apply bg-white/80 dark:bg-gray-800/80
+                       backdrop-blur-md
+                       border border-white/20 dark:border-gray-700/20;
+            }
+            .glass-header {
+                @apply bg-white/80 dark:bg-gray-800/80
+                       backdrop-blur-md;
+            }
+            .glass-input {
+                @apply bg-white/70 dark:bg-gray-700/70
+                       backdrop-blur-sm;
+            }
+            
+            /* 新增动画效果 */
+            .floating-animation {
+                animation: floating 3s ease-in-out infinite;
+            }
+            .pulse-glow {
+                animation: pulse-glow 2s ease-in-out infinite alternate;
+            }
+            .slide-in {
+                animation: slideIn 0.5s ease-out forwards;
+            }
+            .bounce-in {
+                animation: bounceIn 0.6s ease-out forwards;
+            }
+            .typewriter {
+                overflow: hidden;
+                border-right: 2px solid;
+                white-space: nowrap;
+                animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+            }
+        }
+    </style>
+    
+    <!-- 深色模式样式 -->
+    <style>
+        .dark {
+            color-scheme: dark;
+        }
+        
+        .dark body {
+            background-color: #121212;
+            color: #e5e7eb;
+        }
+        
+        .dark .bg-white {
+            background-color: #1e1e1e;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #2d2d2d;
+        }
+        
+        .dark .text-gray-800 {
+            color: #f3f4f6;
+        }
+        
+        .dark .text-gray-700 {
+            color: #e5e7eb;
+        }
+        
+        .dark .text-gray-500 {
+            color: #9ca3af;
+        }
+        
+        .dark .border-gray-300 {
+            border-color: #4b5563;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #374151;
+        }
+        
+        .dark .border-gray-100 {
+            border-color: #374151;
+        }
+        
+        .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+            border-color: #374151;
+        }
+        
+        .dark .hover:bg-gray-300:hover {
+            background-color: #4b5563;
+        }
+        
+        .dark .bg-gray-200 {
+            background-color: #374151;
+        }
+        
+        .dark .dropdown-item-hover:hover {
+            background-color: rgba(22, 93, 255, 0.2);
+        }
+        
+        .dark .dropdown-active {
+            background-color: rgba(22, 93, 255, 0.2);
+        }
+        
+        /* 背景纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1;
+        }
+
+        /* 文字跳动动画 */
+        @keyframes jumpIn {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            60% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .title-char {
+            display: inline-block;
+            animation: jumpIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        /* 新增动画关键帧 */
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 5px rgba(22, 93, 255, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 15px rgba(22, 93, 255, 0.6);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            70% {
+                transform: scale(0.9);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #165DFF }
+        }
+        
+        /* 笔记本图标动画 */
+        .laptop-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .laptop-icon:hover {
+            transform: rotate(-5deg) scale(1.1);
+        }
+        
+        /* 状态指示器动画 */
+        .status-indicator {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .status-indicator:hover::before {
+            left: 100%;
+        }
+        
+        /* 进度条动画 */
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #165DFF, #36CFC9);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* 粒子效果容器 */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* 霓虹效果 */
+        .neon-text {
+            text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+        }
+        
+        /* 加载动画 */
+        .loading-dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% {
+                color: rgba(0,0,0,0);
+                text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);
+            }
+            40% {
+                color: currentColor;
+                text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);
+            }
+            60% {
+                text-shadow: .25em 0 0 currentColor, .5em 0 0 rgba(0,0,0,0);
+            }
+            80%, 100% {
+                text-shadow: .25em 0 0 currentColor, .5em 0 0 currentColor;
+            }
+        }
+        
+        /* 修复下拉菜单样式 - 增强z-index和层级控制 */
+        #laptopModelDropdown {
+            /* 确保下拉菜单在最上层 */
+            z-index: 9999 !important;
+            /* 确保滚动正常工作 */
+            overflow-y: auto;
+            /* 添加内边距让内容更易点击 */
+            padding: 0.5rem;
+            /* 确保下拉菜单不会被其他元素遮挡 */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+        }
+        
+        .model-dropdown-container {
+            position: relative;
+            z-index: 100;
+        }
+        
+        #modelOptions {
+            /* 移除默认列表样式 */
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #modelOptions li {
+            /* 增加点击区域大小 */
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* 修复滚动条样式 */
+        #laptopModelDropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #laptopModelDropdown::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #laptopModelDropdown::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
+        
+        .dark #laptopModelDropdown::-webkit-scrollbar-thumb {
+            background-color: rgba(75, 85, 99, 0.8);
+        }
+        
+        /* 同步状态指示器 */
+        .sync-indicator {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sync-indicator.syncing {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        .sync-indicator.synced {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .sync-indicator.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .sync-indicator.offline {
+            background-color: rgba(108, 117, 125, 0.2);
+            color: #6c757d;
+        }
+
+        /* 确保表单元素不会干扰下拉菜单 */
+        .form-section {
+            position: relative;
+            z-index: 1;
+        }
+
+        .dropdown-section {
+            position: relative;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+    <!-- 粒子效果容器 -->
+    <div id="particlesContainer" class="particles-container"></div>
+    
+    <!-- 进度指示器 -->
+    <div id="globalProgress" class="progress-bar fixed top-0 left-0 z-50"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-none">
+        <!-- 头部添加主题切换按钮 -->
+        <div class="flex justify-between items-center mb-4">
+            <!-- 欢迎消息 -->
+            <div id="welcomeMessage" class="text-sm text-gray-500 dark:text-gray-400 slide-in">
+                <span id="greetingText" class="typewriter">欢迎使用笔记本维修记录系统</span>
+                <span id="userDisplayName" class="ml-2 font-medium text-primary"></span>
+                <span id="timeIndicator" class="ml-2"></span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- 系统状态指示器 -->
+                <div id="systemStatus" class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm status-indicator">
+                    <div class="w-2 h-2 rounded-full bg-green-500 pulse-glow"></div>
+                    <span>系统运行正常</span>
+                </div>
+                
+                <!-- 同步状态指示器 -->
+                <div id="syncStatus" class="sync-indicator synced">
+                    <i class="fa fa-cloud mr-1"></i>
+                    <span>已同步</span>
+                </div>
+                
+                <!-- 手动同步按钮 -->
+                <button id="syncBtn" class="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors flex items-center">
+                    <i class="fa fa-sync mr-1"></i>同步
+                </button>
+                
+                <!-- 退出登录按钮 -->
+                <button id="logoutBtn" class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg transition-colors flex items-center">
+                    <i class="fa fa-sign-out mr-1"></i>退出
+                </button>
+                
+                <button id="themeToggle" class="theme-toggle bg-gray-200/80 dark:bg-primary/80 backdrop-blur-sm">
+                    <span class="theme-toggle-circle transform dark:translate-x-6"></span>
+                    <span class="absolute left-1.5 text-yellow-500 dark:opacity-0">
+                        <i class="fa fa-sun-o"></i>
+                    </span>
+                    <span class="absolute right-1.5 text-blue-200 opacity-0 dark:opacity-100">
+                        <i class="fa fa-moon-o"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 浮动笔记本图标 -->
+        <div class="flex justify-center mb-2">
+            <div class="laptop-icon floating-animation text-4xl text-primary/60">
+                <i class="fa fa-laptop"></i>
+            </div>
+        </div>
+        
+        <header class="mb-10 text-center max-w-4xl mx-auto glass-header rounded-xl p-6 card-shadow">
+            <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-gray-800 dark:text-white mb-2" id="animatedTitle">
+                <i class="fa fa-laptop text-primary mr-3 laptop-icon"></i>
+                <span>笔记本维修记录系统</span>
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400">填写维修信息，自动生成Excel记录</p>
+            
+            <!-- 统计信息卡片 -->
+            <div class="grid grid-cols-3 gap-4 mt-6">
+                <div class="text-center p-3 bg-primary/10 rounded-lg bounce-in" style="animation-delay: 0.1s">
+                    <div class="text-2xl font-bold text-primary" id="totalRecordsCount">0</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">总记录数</div>
+                </div>
+                <div class="text-center p-3 bg-secondary/10 rounded-lg bounce-in" style="animation-delay: 0.2s">
+                    <div class="text-2xl font-bold text-secondary" id="resolvedCount">0</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">已解决</div>
+                </div>
+                <div class="text-center p-3 bg-warning/10 rounded-lg bounce-in" style="animation-delay: 0.3s">
+                    <div class="text-2xl font-bold text-orange-500" id="repairingCount">0</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">维修中</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 mb-8">
+            <div class="md:col-span-2 glass-effect rounded-xl p-6 card-shadow">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-5 flex items-center">
+                    <i class="fa fa-wrench text-primary mr-2 floating-animation" style="animation-delay: 0.2s"></i>
+                    <span class="slide-in">维修信息录入</span>
+                </h2>
+                
+                <form id="repairForm" class="space-y-5">
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="slide-in form-section" style="animation-delay: 0.1s">
+                            <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">用户姓名 <span class="text-danger">*</span></label>
+                            <input type="text" id="username" name="username" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200">
+                        </div>
+                        
+                        <div class="slide-in form-section" style="animation-delay: 0.2s">
+                            <label for="employeeId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">工号 <span class="text-danger">*</span></label>
+                            <input type="text" id="employeeId" name="employeeId" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200">
+                        </div>
+                        
+                        <div class="slide-in form-section" style="animation-delay: 0.3s">
+                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">邮箱 <span class="text-danger">*</span></label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200">
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <!-- 笔记本型号输入框 - 使用专门的容器控制层级 -->
+                        <div class="slide-in dropdown-section" style="animation-delay: 0.4s">
+                            <label for="laptopModelInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">笔记本型号 <span class="text-danger">*</span></label>
+                            <div class="model-dropdown-container relative">
+                                <input type="text" id="laptopModelInput" placeholder="输入或选择笔记本型号" required
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200 pr-10">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" id="dropdownToggle">
+                                    <i class="fa fa-chevron-down text-gray-400 transition-transform duration-200" id="dropdownArrow"></i>
+                                </div>
+                                
+                                <!-- 下拉菜单 - 确保在最上层 -->
+                                <div id="laptopModelDropdown" class="absolute z-[9999] mt-1 w-full glass-effect rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 max-h-60 overflow-y-auto hidden transform translate-y-1">
+                                    <div class="p-2 border-b border-gray-100 dark:border-gray-700">
+                                        <div class="relative">
+                                            <input type="text" id="modelSearch" placeholder="搜索型号..."
+                                                class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg focus:ring-1 focus:ring-primary focus:border-primary">
+                                            <i class="fa fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <ul id="modelOptions" class="p-1 text-sm">
+                                        <!-- 选项将通过JS动态生成 -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slide-in form-section" style="animation-delay: 0.5s">
+                            <label for="serialNumber" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">序列号 <span class="text-danger">*</span></label>
+                            <input type="text" id="serialNumber" name="serialNumber" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200">
+                        </div>
+                    </div>
+                    
+                    <div class="slide-in form-section" style="animation-delay: 0.6s">
+                        <label for="faultDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">故障描述 <span class="text-danger">*</span></label>
+                        <textarea id="faultDescription" name="faultDescription" rows="3" required
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200"
+                            placeholder="请详细描述笔记本出现的故障现象..."></textarea>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="slide-in form-section" style="animation-delay: 0.7s">
+                            <label for="solveDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">问题提交日期 <span class="text-danger">*</span></label>
+                            <input type="date" id="solveDate" name="solveDate" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200">
+                        </div>
+                        
+                        <div class="slide-in form-section" style="animation-delay: 0.8s">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">状态 <span class="text-danger">*</span></label>
+                            <input type="hidden" id="status" name="status" required>
+                            <div class="flex flex-wrap gap-2 mt-1" id="statusSelector">
+                                <span class="status-pill bg-success/10 text-success border border-success/30 hover:bg-success/20 pulse-glow" data-status="已解决">
+                                    <i class="fa fa-check-circle mr-1"></i>已解决
+                                </span>
+                                <span class="status-pill bg-statusRepairing/10 text-statusRepairing border border-statusRepairing/30 hover:bg-statusRepairing/20 pulse-glow" data-status="维修中">
+                                    <i class="fa fa-cog mr-1"></i>维修中
+                                </span>
+                                <span class="status-pill bg-statusWaiting/10 text-statusWaiting border border-statusWaiting/30 hover:bg-statusWaiting/20 pulse-glow" data-status="待配件">
+                                    <i class="fa fa-clock-o mr-1"></i>待配件
+                                </span>
+                                <span class="status-pill bg-statusUnrepairable/10 text-statusUnrepairable border border-statusUnrepairable/30 hover:bg-statusUnrepairable/20 pulse-glow" data-status="过保无法维修">
+                                    <i class="fa fa-times-circle mr-1"></i>过保无法维修
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-in form-section" style="animation-delay: 0.9s">
+                        <label for="comment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">备注</label>
+                        <textarea id="comment" name="comment" rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200"
+                            placeholder="请输入维修详情、处理方式等信息..."></textarea>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button type="submit" id="addRecordBtn" 
+                            class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition duration-200 flex items-center pulse-glow">
+                            <i class="fa fa-plus-circle mr-2"></i>添加记录
+                        </button>
+                        <button type="button" id="editRecordBtn" disabled
+                            class="px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition duration-200 flex items-center opacity-50 cursor-not-allowed">
+                            <i class="fa fa-pencil mr-2"></i>编辑记录
+                        </button>
+                        <button type="button" id="downloadExcelBtn" 
+                            class="px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition duration-200 flex items-center pulse-glow">
+                            <i class="fa fa-download mr-2"></i>下载Excel
+                        </button>
+                        <button type="button" id="deleteSelectedBtn" disabled
+                            class="px-6 py-3 bg-danger text-white rounded-lg hover:bg-danger/90 transition duration-200 flex items-center opacity-50 cursor-not-allowed">
+                            <i class="fa fa-trash-o mr-2"></i>删除选中
+                        </button>
+                        <button type="button" id="clearRecordsBtn" 
+                            class="px-6 py-3 bg-danger text-white rounded-lg hover:bg-danger/90 transition duration-200 flex items-center pulse-glow">
+                            <i class="fa fa-trash mr-2"></i>清除记录
+                        </button>
+                        <button type="reset" 
+                            class="px-6 py-3 bg-gray-200/80 dark:bg-gray-700/80 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-200 flex items-center backdrop-blur-sm">
+                            <i class="fa fa-refresh mr-2"></i>重置
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="glass-effect rounded-xl p-5 card-shadow">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <i class="fa fa-upload text-primary mr-2 floating-animation"></i>导入已有记录
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">上传现有的Excel文件，继续添加新记录</p>
+                    <input type="file" id="excelFile" accept=".xlsx, .xls" 
+                        class="w-full text-sm text-gray-500 dark:text-gray-400
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0
+                            file:text-sm file:font-medium
+                            file:bg-primary file:text-white
+                            hover:file:bg-primary/90 cursor-pointer">
+                </div>
+                
+                <div class="glass-effect rounded-xl p-5 card-shadow">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <i class="fa fa-history text-primary mr-2 floating-animation"></i>最近记录
+                    </h3>
+                    <div id="recentRecords" class="max-h-64 overflow-y-auto space-y-3 text-sm">
+                        <p class="text-gray-500 dark:text-gray-400 italic text-center py-4">暂无记录</p>
+                    </div>
+                </div>
+                
+                <!-- 新增：快捷操作面板 -->
+                <div class="glass-effect rounded-xl p-5 card-shadow">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <i class="fa fa-bolt text-yellow-500 mr-2 floating-animation"></i>快捷操作
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="quickAdd" class="p-3 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors flex flex-col items-center justify-center">
+                            <i class="fa fa-plus text-primary text-xl mb-1"></i>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">快速添加</span>
+                        </button>
+                        <button id="quickStats" class="p-3 bg-secondary/10 hover:bg-secondary/20 rounded-lg transition-colors flex flex-col items-center justify-center">
+                            <i class="fa fa-chart-bar text-secondary text-xl mb-1"></i>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">数据统计</span>
+                        </button>
+                        <button id="quickExport" class="p-3 bg-green-500/10 hover:bg-green-500/20 rounded-lg transition-colors flex flex-col items-center justify-center">
+                            <i class="fa fa-file-export text-green-500 text-xl mb-1"></i>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">快速导出</span>
+                        </button>
+                        <button id="quickSearch" class="p-3 bg-purple-500/10 hover:bg-purple-500/20 rounded-lg transition-colors flex flex-col items-center justify-center">
+                            <i class="fa fa-search text-purple-500 text-xl mb-1"></i>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">搜索记录</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 glass-effect rounded-xl p-6 card-shadow">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center">
+                    <i class="fa fa-table text-primary mr-2"></i>记录表格预览
+                    <span class="ml-3 text-sm font-normal text-gray-500 dark:text-gray-400">
+                        <i class="fa fa-info-circle"></i> 点击行可选中记录进行操作
+                    </span>
+                </h2>
+                
+                <!-- 表格操作工具栏 -->
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <input type="text" id="tableSearch" placeholder="搜索记录..." 
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 glass-input dark:text-white rounded-lg form-input-focus transition duration-200 text-sm">
+                        <i class="fa fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    </div>
+                    <button id="refreshTable" class="p-2 bg-gray-200/80 dark:bg-gray-700/80 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-200">
+                        <i class="fa fa-refresh text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="recordsTable" class="full-width-table">
+                    <thead class="bg-gray-50/70 dark:bg-gray-700/70 backdrop-blur-sm">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-10">
+                                <i class="fa fa-check-square-o"></i>
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">用户姓名</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">工号</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">邮箱</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">笔记本型号</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">序列号</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" style="min-width: 200px;">故障描述</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">提交日期</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <span class="inline-flex items-center">
+                                <i class="fa fa-info-circle text-primary mr-1" title="点击状态标签进行修改"></i>
+                                状态
+                            </span>
+                        </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" style="min-width: 200px;">备注</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTableBody" class="bg-white/60 dark:bg-gray-800/60 divide-y divide-gray-200/50 dark:divide-gray-700/50 backdrop-blur-sm">
+                        <tr>
+                            <td colspan="10" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400 italic">暂无记录，请添加维修记录</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="paginationControls" class="flex justify-between items-center mt-6 hidden">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    显示 <span id="showingRange"></span> 条，共 <span id="totalRecords"></span> 条记录
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="prevPage" class="pagination-item disabled cursor-not-allowed dark:border-gray-600 dark:text-gray-300" disabled>
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <div id="pageNumbers" class="flex items-center gap-1"></div>
+                    <button id="nextPage" class="pagination-item disabled cursor-not-allowed dark:border-gray-600 dark:text-gray-300" disabled>
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // Firebase 配置 - 修复数据库URL格式
+        const firebaseConfig = {
+            apiKey: "AIzaSyCliFpgd9s25NMnN9aC_zcUVEa_LYXsclo",
+            authDomain: "laptop-repair-system-ab5cb.firebaseapp.com",
+            databaseURL: "https://laptop-repair-system-ab5cb-default-rtdb.firebaseio.com", // 移除末尾斜杠
+            projectId: "laptop-repair-system-ab5cb",
+            storageBucket: "laptop-repair-system-ab5cb.firebasestorage.app",
+            messagingSenderId: "346945019586",
+            appId: "1:346945019586:web:16314750732c9f859b655b"
+        };
+        
+        // 初始化 Firebase（包含 Auth）
+        let database, recordsRef, auth;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            auth = firebase.auth(); // 初始化 Auth
+            recordsRef = database.ref('repairRecords');
+            console.log('Firebase初始化成功（包含 Auth 和 Database）');
+            
+            // 检查登录状态
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    console.log('用户已登录:', user.email);
+                    
+                    // 更新显示用户名
+                    const userDisplay = document.getElementById('userDisplayName');
+                    if (userDisplay) {
+                        userDisplay.textContent = `| 当前用户: ${user.displayName || user.email}`;
+                    }
+                    
+                    updateSyncStatus('synced');
+                    // 只有在登录后才初始化监听器
+                    initEnhancedFirebaseListeners();
+                } else {
+                    console.log('用户未登录，跳转到登录页');
+                    window.location.href = '1.html';
+                }
+            });
+        } catch (error) {
+            console.error('Firebase初始化失败:', error);
+            // 如果Firebase初始化失败，创建虚拟对象以保持功能正常
+            database = { ref: () => ({ 
+                on: () => {}, 
+                set: () => Promise.resolve(),
+                push: () => ({ key: Date.now().toString() }),
+                child: () => ({ set: () => Promise.resolve(), remove: () => Promise.resolve() }),
+                remove: () => Promise.resolve()
+            }) };
+            recordsRef = database.ref('repairRecords');
+            auth = { onAuthStateChanged: (cb) => cb(null) };
+        }
+        
+        // 存储所有维修记录
+        let repairRecords = [];
+        // 分页配置
+        const paginationConfig = {
+            pageSize: 10,  // 每页显示10条记录
+            currentPage: 1  // 当前页码
+        };
+        // 选中的记录索引
+        let selectedRecordIndices = [];
+        // 当前编辑的记录索引
+        let currentEditingIndex = -1;
+        // 表头信息
+        const headers = [
+            "选择", "用户姓名", "工号", "邮箱", "笔记本型号", 
+            "序列号", "故障描述", "问题解决日期", "状态", "备注"
+        ];
+        
+        // 笔记本型号预选项
+        const laptopModels = [
+            "HP EliteBook 8 G1a 14 inch Notebook AI PC",
+            "HP EB840/G7",
+            "HP EB840/G8",
+            "HP EliteBook 840/G11",
+            "HP EliteBook 840/G10",
+            "HP EliteBook 845/G8",
+            "HP ZBook Firefly 14 G8",
+            "HP ZBook Studio G7 15",
+            "Dell Latitude 7420",
+            "Microsoft Surface Pro",
+            "Apple MacBook Air",
+            "Apple MacBook Pro",
+        ];
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('页面加载完成，开始初始化...');
+            
+            // 初始化标题文字跳动动画
+            initTitleAnimation();
+            
+            // 初始化主题模式
+            initThemeMode();
+            
+            // 初始化退出登录按钮
+            initLogoutButton();
+            
+            // 从localStorage加载记录（作为离线备用）
+            loadRecordsFromStorage();
+            
+            // 设置默认日期为今天
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('solveDate').value = today;
+            
+            // 初始化状态选择器
+            initStatusSelector();
+            
+            // 初始化笔记本型号下拉选项 - 修复层级问题
+            initLaptopModelDropdown();
+            
+            // 单独处理清除记录按钮的事件绑定，确保DOM加载完成
+            setupClearRecordsButton();
+            
+            // 初始化删除选中按钮事件
+            initDeleteSelectedButton();
+            
+            // 初始化编辑按钮事件
+            initEditButton();
+            
+            // 初始化其他事件监听
+            initOtherEventListeners();
+            
+            // 初始化分页控件事件
+            initPaginationEvents();
+            
+            // 初始化时检查是否需要显示分页控件
+            updatePaginationControls();
+            
+            // 恢复滚动位置
+            restoreScrollPosition();
+            
+            // 初始化新功能
+            initNewFeatures();
+            
+            // 初始化手动同步按钮
+            initSyncButton();
+            
+            // 初始化网络状态监听
+            initNetworkListeners();
+        });
+
+        // 初始化退出登录按钮
+        function initLogoutButton() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    if (confirm('确定要退出登录吗？')) {
+                        auth.signOut().then(() => {
+                            console.log('用户已登出');
+                            window.location.href = 'index.html';
+                        }).catch((error) => {
+                            console.error('登出失败:', error);
+                            showNotification('登出失败', 'error');
+                        });
+                    }
+                });
+            }
+        }
+
+        // 初始化手动同步按钮
+        function initSyncButton() {
+            const syncBtn = document.getElementById('syncBtn');
+            syncBtn.addEventListener('click', () => {
+                enhancedSyncRecords();
+            });
+        }
+
+        // 增强的数据同步函数
+        function enhancedSyncRecords() {
+            updateSyncStatus('syncing');
+            
+            // 检查网络连接
+            if (!navigator.onLine) {
+                updateSyncStatus('offline');
+                showNotification('网络连接不可用，使用本地数据', 'warning');
+                return;
+            }
+            
+            // 检查Firebase认证状态
+            if (!firebase.apps.length || !auth.currentUser) {
+                console.log('用户未登录，无法同步');
+                updateSyncStatus('error', 'unauthenticated');
+                showNotification('请先登录以同步云端数据', 'warning');
+                return;
+            }
+            
+            // 同步数据到Firebase
+            saveRecordsToFirebase();
+        }
+
+        // 改进的保存到Firebase函数
+        function saveRecordsToFirebase() {
+            if (!firebase.apps.length || !auth.currentUser) {
+                console.log('Firebase未就绪，稍后重试');
+                setTimeout(saveRecordsToFirebase, 5000); // 5秒后重试
+                return;
+            }
+            
+            updateSyncStatus('syncing');
+            
+            // 使用事务确保数据一致性
+            recordsRef.transaction(() => {
+                return repairRecords;
+            }, (error, committed, snapshot) => {
+                if (error) {
+                    console.error('数据同步失败:', error);
+                    updateSyncStatus('error', error.code);
+                    showNotification('云端同步失败，数据仅保存在本地', 'error', error.message);
+                } else if (committed) {
+                    console.log('数据同步成功');
+                    updateSyncStatus('synced');
+                    showNotification('云端同步成功', 'success');
+                }
+            });
+        }
+
+        // 改进的数据监听器
+        function initEnhancedFirebaseListeners() {
+            console.log('初始化增强的Firebase监听器...');
+            
+            // 监听连接状态
+            database.ref('.info/connected').on('value', (snapshot) => {
+                const connected = snapshot.val();
+                console.log('Firebase连接状态:', connected);
+                
+                if (connected) {
+                    updateSyncStatus('synced');
+                    // 连接恢复时同步数据
+                    enhancedSyncRecords();
+                } else {
+                    updateSyncStatus('offline');
+                }
+            });
+            
+            // 监听数据变化（使用更可靠的方式）
+            recordsRef.on('value', (snapshot) => {
+                console.log('收到Firebase数据更新');
+                const data = snapshot.val();
+                
+                if (data) {
+                    // 将Firebase数据转换为数组
+                    const firebaseRecords = [];
+                    Object.keys(data).forEach(key => {
+                        if (data[key] !== null) { // 过滤空值
+                            firebaseRecords.push(data[key]);
+                        }
+                    });
+                    
+                    console.log(`从Firebase加载 ${firebaseRecords.length} 条记录`);
+                    
+                    // 只有当云端数据比本地数据新时才更新
+                    if (shouldUpdateLocalData(firebaseRecords)) {
+                        repairRecords = firebaseRecords;
+                        saveRecordsToStorage();
+                        updateAllUI();
+                        showNotification('数据已从云端同步', 'success');
+                    }
+                    
+                    updateSyncStatus('synced');
+                } else {
+                    console.log('Firebase中没有记录，将本地数据同步到云端');
+                    if (repairRecords.length > 0) {
+                        enhancedSyncRecords();
+                    }
+                    updateSyncStatus('synced');
+                }
+            }, (error) => {
+                console.error('Firebase数据监听错误:', error);
+                updateSyncStatus('error', error.code);
+            });
+        }
+
+        // 判断是否应该更新本地数据
+        function shouldUpdateLocalData(firebaseRecords) {
+            // 简单的基于记录数量的判断逻辑
+            // 您可以根据需要实现更复杂的逻辑（如时间戳比较）
+            return firebaseRecords.length > repairRecords.length;
+        }
+
+        // 更新所有UI组件
+        function updateAllUI() {
+            updateRecordsTable();
+            updateRecentRecords();
+            updatePaginationControls();
+            updateStatistics();
+        }
+
+        // 初始化网络状态监听
+        function initNetworkListeners() {
+            window.addEventListener('online', () => {
+                console.log('网络连接恢复');
+                updateSyncStatus('syncing');
+                enhancedSyncRecords();
+            });
+
+            window.addEventListener('offline', () => {
+                console.log('网络连接断开');
+                updateSyncStatus('offline');
+                showNotification('网络连接已断开，使用本地数据', 'warning');
+            });
+        }
+
+        // 改进的同步状态更新函数
+        function updateSyncStatus(status, errorCode = '') {
+            const syncIndicator = document.getElementById('syncStatus');
+            if (!syncIndicator) return;
+            
+            const icon = syncIndicator.querySelector('i');
+            const text = syncIndicator.querySelector('span');
+            
+            // 移除所有状态类
+            syncIndicator.classList.remove('syncing', 'synced', 'error', 'offline');
+            
+            switch(status) {
+                case 'syncing':
+                    syncIndicator.classList.add('syncing');
+                    icon.className = 'fa fa-refresh fa-spin mr-1';
+                    text.textContent = '同步中...';
+                    break;
+                case 'synced':
+                    syncIndicator.classList.add('synced');
+                    icon.className = 'fa fa-cloud mr-1';
+                    text.textContent = '已同步';
+                    // 同步成功后更新统计信息
+                    updateStatistics();
+                    break;
+                case 'error':
+                    syncIndicator.classList.add('error');
+                    icon.className = 'fa fa-exclamation-triangle mr-1';
+                    text.textContent = errorCode ? `同步失败（${errorCode}）` : '同步失败';
+                    break;
+                case 'offline':
+                    syncIndicator.classList.add('offline');
+                    icon.className = 'fa fa-wifi mr-1';
+                    text.textContent = '离线模式';
+                    break;
+            }
+        }
+
+        // 初始化笔记本型号下拉选项 - 修复层级问题
+        function initLaptopModelDropdown() {
+            const modelOptions = document.getElementById('modelOptions');
+            const modelInput = document.getElementById('laptopModelInput');
+            const dropdown = document.getElementById('laptopModelDropdown');
+            const dropdownArrow = document.getElementById('dropdownArrow');
+            const dropdownToggle = document.getElementById('dropdownToggle');
+            const modelSearch = document.getElementById('modelSearch');
+            
+            // 渲染所有型号选项
+            renderModelOptions(laptopModels);
+            
+            // 点击输入框显示/隐藏下拉菜单
+            modelInput.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleDropdown();
+            });
+            
+            // 点击下拉箭头显示/隐藏下拉菜单
+            dropdownToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleDropdown();
+            });
+            
+            // 搜索功能
+            modelSearch.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredModels = laptopModels.filter(model => 
+                    model.toLowerCase().includes(searchTerm)
+                );
+                renderModelOptions(filteredModels);
+            });
+            
+            // 点击其他区域关闭下拉菜单
+            document.addEventListener('click', (e) => {
+                // 如果点击的不是下拉菜单相关元素，则关闭下拉菜单
+                if (!e.target.closest('.model-dropdown-container')) {
+                    closeDropdown();
+                }
+            });
+            
+            // 防止下拉菜单内部点击关闭菜单
+            dropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            // 键盘导航
+            modelInput.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    openDropdown();
+                    const firstOption = modelOptions.querySelector('li');
+                    if (firstOption) {
+                        firstOption.classList.add('dropdown-active');
+                        firstOption.scrollIntoView({ block: 'nearest' });
+                    }
+                }
+                
+                // ESC键关闭下拉菜单
+                if (e.key === 'Escape') {
+                    closeDropdown();
+                }
+            });
+            
+            // 处理下拉菜单内的键盘事件
+            dropdown.addEventListener('keydown', (e) => {
+                const activeOption = modelOptions.querySelector('.dropdown-active');
+                const options = Array.from(modelOptions.querySelectorAll('li'));
+                const activeIndex = options.indexOf(activeOption);
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        if (activeOption) activeOption.classList.remove('dropdown-active');
+                        const nextIndex = activeIndex === -1 ? 0 : (activeIndex + 1) % options.length;
+                        options[nextIndex].classList.add('dropdown-active');
+                        options[nextIndex].scrollIntoView({ block: 'nearest' });
+                        break;
+                        
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        if (activeOption) activeOption.classList.remove('dropdown-active');
+                        const prevIndex = activeIndex === -1 ? options.length - 1 : (activeIndex - 1 + options.length) % options.length;
+                        options[prevIndex].classList.add('dropdown-active');
+                        options[prevIndex].scrollIntoView({ block: 'nearest' });
+                        break;
+                        
+                    case 'Enter':
+                        e.preventDefault();
+                        if (activeOption) {
+                            selectModel(activeOption.dataset.model);
+                        }
+                        break;
+                        
+                    case 'Escape':
+                        closeDropdown();
+                        modelInput.focus();
+                        break;
+                }
+            });
+            
+            // 修复：添加鼠标滚轮事件支持
+            dropdown.addEventListener('wheel', (e) => {
+                // 确保滚动正常工作，不阻止默认行为
+                e.stopPropagation();
+            });
+            
+            // 渲染选项函数
+            function renderModelOptions(models) {
+                modelOptions.innerHTML = '';
+                
+                if (models.length === 0) {
+                    const noResult = document.createElement('li');
+                    noResult.className = 'px-3 py-2 text-gray-400 dark:text-gray-500 italic';
+                    noResult.textContent = '没有找到匹配的型号';
+                    modelOptions.appendChild(noResult);
+                    return;
+                }
+                
+                models.forEach(model => {
+                    const li = document.createElement('li');
+                    li.className = 'px-3 py-2 rounded-md dropdown-item-hover dark:text-gray-300 cursor-pointer transition-colors duration-200';
+                    li.textContent = model;
+                    li.dataset.model = model;
+                    
+                    // 点击选择型号
+                    li.addEventListener('click', () => {
+                        selectModel(model);
+                    });
+                    
+                    // 鼠标悬停高亮
+                    li.addEventListener('mouseenter', () => {
+                        modelOptions.querySelectorAll('.dropdown-active').forEach(el => {
+                            el.classList.remove('dropdown-active');
+                        });
+                        li.classList.add('dropdown-active');
+                    });
+                    
+                    modelOptions.appendChild(li);
+                });
+            }
+            
+            // 选择型号
+            function selectModel(model) {
+                modelInput.value = model;
+                closeDropdown();
+                // 移动焦点到下一个输入框
+                document.getElementById('serialNumber').focus();
+            }
+            
+            // 打开下拉菜单
+            function openDropdown() {
+                dropdown.classList.remove('hidden');
+                dropdownArrow.classList.add('rotate-180');
+                modelSearch.focus();
+                modelSearch.value = '';
+                renderModelOptions(laptopModels);
+                
+                // 确保下拉菜单在最上层
+                dropdown.style.zIndex = '9999';
+            }
+            
+            // 关闭下拉菜单
+            function closeDropdown() {
+                dropdown.classList.add('hidden');
+                dropdownArrow.classList.remove('rotate-180');
+                modelOptions.querySelectorAll('.dropdown-active').forEach(el => {
+                    el.classList.remove('dropdown-active');
+                });
+            }
+            
+            // 切换下拉菜单状态
+            function toggleDropdown() {
+                if (dropdown.classList.contains('hidden')) {
+                    openDropdown();
+                } else {
+                    closeDropdown();
+                    modelInput.focus();
+                }
+            }
+        }
+        
+        // 从Firebase删除记录
+        function deleteRecordFromFirebase(index) {
+            if (!firebase.apps.length || !auth.currentUser) return;
+            
+            // 查找记录的Firebase键（需要保存键到本地记录）
+            recordsRef.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const keys = Object.keys(data);
+                    if (keys[index]) {
+                        recordsRef.child(keys[index]).remove()
+                            .then(() => {
+                                console.log(`Firebase记录 ${keys[index]} 已删除`);
+                            })
+                            .catch((error) => {
+                                console.error('删除Firebase记录失败:', error);
+                            });
+                    }
+                }
+            });
+        }
+        
+        // 更新Firebase中的记录
+        function updateRecordInFirebase(index, record) {
+            if (!firebase.apps.length || !auth.currentUser) return;
+            
+            // 查找记录的Firebase键
+            recordsRef.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const keys = Object.keys(data);
+                    if (keys[index]) {
+                        recordsRef.child(keys[index]).set(record)
+                            .then(() => {
+                                console.log(`Firebase记录 ${keys[index]} 已更新`);
+                            })
+                            .catch((error) => {
+                                console.error('更新Firebase记录失败:', error);
+                            });
+                    }
+                }
+            });
+        }
+        
+        // 添加记录到Firebase（使用push生成唯一键）
+        function addRecordToFirebase(record) {
+            if (!firebase.apps.length || !auth.currentUser) return;
+            
+            const newRecordKey = recordsRef.push().key;
+            recordsRef.child(newRecordKey).set(record)
+                .then(() => {
+                    console.log('新记录已添加到Firebase，键：', newRecordKey);
+                })
+                .catch((error) => {
+                    console.error('添加到Firebase失败:', error);
+                });
+        }
+        
+        // 清除Firebase中的所有记录
+        function clearFirebaseRecords() {
+            if (!firebase.apps.length || !auth.currentUser) return;
+            
+            recordsRef.remove()
+                .then(() => {
+                    console.log('Firebase中的所有记录已清除');
+                })
+                .catch((error) => {
+                    console.error('清除Firebase记录失败:', error);
+                });
+        }
+        
+        // 初始化新功能
+        function initNewFeatures() {
+            // 初始化粒子效果
+            initParticles();
+            
+            // 更新时间显示
+            updateTimeDisplay();
+            setInterval(updateTimeDisplay, 60000);
+            
+            // 初始化快捷操作
+            initQuickActions();
+            
+            // 初始化表格搜索
+            initTableSearch();
+            
+            // 初始化统计信息
+            updateStatistics();
+            
+            // 初始化欢迎消息
+            initWelcomeMessage();
+        }
+        
+        // 初始化粒子效果
+        function initParticles() {
+            const container = document.getElementById('particlesContainer');
+            const colors = ['#165DFF', '#36CFC9', '#FF7D00', '#00B42A'];
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'absolute rounded-full';
+                particle.style.width = `${Math.random() * 6 + 2}px`;
+                particle.style.height = particle.style.width;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.opacity = `${Math.random() * 0.3 + 0.1}`;
+                particle.style.animation = `floating ${Math.random() * 10 + 10}s ease-in-out infinite`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(particle);
+            }
+        }
+        
+        // 更新时间显示
+        function updateTimeDisplay() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeIndicator = document.getElementById('timeIndicator');
+            
+            let greeting = '';
+            if (hours < 6) greeting = '深夜好';
+            else if (hours < 12) greeting = '早上好';
+            else if (hours < 14) greeting = '中午好';
+            else if (hours < 18) greeting = '下午好';
+            else greeting = '晚上好';
+            
+            timeIndicator.textContent = `${greeting} ${hours}:${minutes}`;
+        }
+        
+        // 初始化快捷操作
+        function initQuickActions() {
+            // 快速添加
+            document.getElementById('quickAdd').addEventListener('click', () => {
+                document.getElementById('repairForm').scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('username').focus();
+                showNotification('已跳转到添加表单', 'info');
+            });
+            
+            // 数据统计
+            document.getElementById('quickStats').addEventListener('click', () => {
+                showStatisticsModal();
+            });
+            
+            // 快速导出
+            document.getElementById('quickExport').addEventListener('click', () => {
+                downloadExcel();
+            });
+            
+            // 快速搜索
+            document.getElementById('quickSearch').addEventListener('click', () => {
+                document.getElementById('tableSearch').focus();
+                showNotification('请在搜索框中输入关键词', 'info');
+            });
+            
+            // 刷新表格
+            document.getElementById('refreshTable').addEventListener('click', () => {
+                updateRecordsTable();
+                showNotification('表格已刷新', 'success');
+            });
+        }
+        
+        // 初始化表格搜索
+        function initTableSearch() {
+            const searchInput = document.getElementById('tableSearch');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                if (searchTerm) {
+                    // 这里可以添加搜索逻辑
+                    showNotification(`搜索: ${searchTerm}`, 'info');
+                }
+            });
+        }
+        
+        // 更新统计信息
+        function updateStatistics() {
+            const total = repairRecords.length;
+            const resolved = repairRecords.filter(r => r.status === '已解决').length;
+            const repairing = repairRecords.filter(r => r.status === '维修中').length;
+            
+            document.getElementById('totalRecordsCount').textContent = total;
+            document.getElementById('resolvedCount').textContent = resolved;
+            document.getElementById('repairingCount').textContent = repairing;
+            
+            // 更新进度条
+            const progressBar = document.getElementById('globalProgress');
+            if (total > 0) {
+                progressBar.style.width = '100%';
+            } else {
+                progressBar.style.width = '0%';
+            }
+        }
+        
+        // 初始化欢迎消息
+        function initWelcomeMessage() {
+            const messages = [
+                "准备好记录新的维修任务了吗？",
+                "系统运行稳定，随时为您服务",
+                "今日已完成多项维修记录",
+                "高效管理，从记录开始"
+            ];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            setTimeout(() => {
+                const greetingText = document.getElementById('greetingText');
+                greetingText.textContent = randomMessage;
+                greetingText.classList.add('typewriter');
+            }, 4000);
+        }
+        
+        // 显示统计模态框
+        function showStatisticsModal() {
+            const total = repairRecords.length;
+            const statusCounts = {
+                '已解决': repairRecords.filter(r => r.status === '已解决').length,
+                '维修中': repairRecords.filter(r => r.status === '维修中').length,
+                '待配件': repairRecords.filter(r => r.status === '待配件').length,
+                '过保无法维修': repairRecords.filter(r => r.status === '过保无法维修').length
+            };
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 card-shadow bounce-in">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">数据统计</h3>
+                        <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" onclick="this.closest('.fixed').remove()">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-3 bg-primary/10 rounded-lg">
+                                <div class="text-2xl font-bold text-primary">${total}</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-300">总记录数</div>
+                            </div>
+                            <div class="text-center p-3 bg-green-500/10 rounded-lg">
+                                <div class="text-2xl font-bold text-green-500">${statusCounts['已解决']}</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-300">已解决</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            ${Object.entries(statusCounts).map(([status, count]) => `
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600 dark:text-gray-300">${status}</span>
+                                    <span class="text-sm font-medium">${count}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition duration-200" onclick="this.closest('.fixed').remove()">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // 保存滚动位置
+        function saveScrollPosition() {
+            sessionStorage.setItem('scrollPosition', window.scrollY);
+            sessionStorage.setItem('scrollTimestamp', Date.now());
+        }
+
+        // 恢复滚动位置 - 修复版本
+        function restoreScrollPosition() {
+            const savedPosition = sessionStorage.getItem('scrollPosition');
+            const savedTimestamp = sessionStorage.getItem('scrollTimestamp');
+            
+            // 如果保存的位置存在且是在5分钟内保存的
+            if (savedPosition && savedTimestamp && (Date.now() - parseInt(savedTimestamp)) < 300000) {
+                // 使用requestAnimationFrame确保DOM完全渲染
+                requestAnimationFrame(() => {
+                    window.scrollTo(0, parseInt(savedPosition));
+                    console.log(`恢复滚动位置: ${savedPosition}px`);
+                });
+            }
+            
+            // 清除保存的位置，避免下次加载时再次滚动
+            sessionStorage.removeItem('scrollPosition');
+            sessionStorage.removeItem('scrollTimestamp');
+        }
+
+        // 在页面卸载前保存滚动位置
+        window.addEventListener('beforeunload', saveScrollPosition);
+        
+        // 初始化状态选择器
+        function initStatusSelector() {
+            const statusSelector = document.getElementById('statusSelector');
+            const statusPills = statusSelector.querySelectorAll('.status-pill');
+            
+            // 默认选中第一个状态
+            if (statusPills.length > 0) {
+                statusPills[0].classList.add('status-pill-active');
+                document.getElementById('status').value = statusPills[0].dataset.status;
+            }
+            
+            // 为每个状态选项添加点击事件
+            statusPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    // 移除所有选中状态
+                    statusPills.forEach(p => p.classList.remove('status-pill-active'));
+                    // 添加当前选中状态
+                    pill.classList.add('status-pill-active');
+                    // 更新隐藏输入框的值
+                    document.getElementById('status').value = pill.dataset.status;
+                });
+            });
+        }
+        
+        // 初始化清除记录按钮事件
+        function setupClearRecordsButton() {
+            const clearBtn = document.getElementById('clearRecordsBtn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    if (confirm('确定要清除所有记录吗？此操作不可撤销！')) {
+                        // 清除本地记录
+                        repairRecords = [];
+                        // 清除本地存储
+                        localStorage.removeItem('repairRecords');
+                        // 清除Firebase记录
+                        clearFirebaseRecords();
+                        // 更新界面
+                        updateRecordsTable();
+                        updateRecentRecords();
+                        updatePaginationControls();
+                        updateStatistics();
+                        // 重置表单
+                        document.getElementById('repairForm').reset();
+                        // 重置编辑状态
+                        currentEditingIndex = -1;
+                        document.getElementById('addRecordBtn').textContent = '添加记录';
+                        document.getElementById('addRecordBtn').innerHTML = '<i class="fa fa-plus-circle mr-2"></i>添加记录';
+                        document.getElementById('editRecordBtn').disabled = true;
+                        document.getElementById('editRecordBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                        // 重置状态选择器
+                        initStatusSelector();
+                        // 显示提示
+                        showNotification('所有记录已清除', 'success');
+                    }
+                });
+            }
+        }
+        
+        // 初始化删除选中按钮事件
+        function initDeleteSelectedButton() {
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            deleteBtn.addEventListener('click', () => {
+                if (selectedRecordIndices.length === 0) {
+                    showNotification('请先选择要删除的记录', 'warning');
+                    return;
+                }
+                
+                if (confirm(`确定要删除选中的 ${selectedRecordIndices.length} 条记录吗？`)) {
+                    // 按降序删除，避免索引错乱
+                    selectedRecordIndices.sort((a, b) => b - a);
+                    selectedRecordIndices.forEach(index => {
+                        // 从Firebase删除
+                        deleteRecordFromFirebase(index);
+                        // 从本地删除
+                        repairRecords.splice(index, 1);
+                    });
+                    
+                    // 清空选中索引
+                    selectedRecordIndices = [];
+                    // 保存到本地存储
+                    saveRecordsToStorage();
+                    // 保存到Firebase
+                    saveRecordsToFirebase();
+                    // 更新界面
+                    updateRecordsTable();
+                    updateRecentRecords();
+                    updatePaginationControls();
+                    updateStatistics();
+                    // 更新按钮状态
+                    updateDeleteButtonState();
+                    // 显示提示
+                    showNotification('选中记录已删除', 'success');
+                }
+            });
+        }
+        
+        // 初始化编辑按钮事件
+        function initEditButton() {
+            const editBtn = document.getElementById('editRecordBtn');
+            editBtn.addEventListener('click', () => {
+                if (selectedRecordIndices.length !== 1) {
+                    showNotification('请选择一条记录进行编辑', 'warning');
+                    return;
+                }
+                
+                const index = selectedRecordIndices[0];
+                const record = repairRecords[index];
+                
+                // 填充表单
+                document.getElementById('username').value = record.username || '';
+                document.getElementById('employeeId').value = record.employeeId || '';
+                document.getElementById('email').value = record.email || '';
+                document.getElementById('laptopModelInput').value = record.laptopModel || '';
+                document.getElementById('serialNumber').value = record.serialNumber || '';
+                document.getElementById('faultDescription').value = record.faultDescription || '';
+                document.getElementById('solveDate').value = record.solveDate || '';
+                document.getElementById('comment').value = record.comment || '';
+                
+                // 设置状态
+                const status = record.status || '已解决';
+                document.getElementById('status').value = status;
+                const statusPills = document.querySelectorAll('.status-pill');
+                statusPills.forEach(pill => {
+                    if (pill.dataset.status === status) {
+                        pill.classList.add('status-pill-active');
+                    } else {
+                        pill.classList.remove('status-pill-active');
+                    }
+                });
+                
+                // 设置当前编辑索引
+                currentEditingIndex = index;
+                
+                // 滚动到表单
+                document.getElementById('repairForm').scrollIntoView({ behavior: 'smooth' });
+                
+                // 更改添加按钮文本
+                document.getElementById('addRecordBtn').innerHTML = '<i class="fa fa-save mr-2"></i>保存修改';
+                
+                showNotification('请修改表单内容并点击保存', 'info');
+            });
+        }
+        
+        // 初始化其他事件监听
+        function initOtherEventListeners() {
+            // 表单提交事件
+            const repairForm = document.getElementById('repairForm');
+            repairForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const formData = {
+                    username: document.getElementById('username').value,
+                    employeeId: document.getElementById('employeeId').value,
+                    email: document.getElementById('email').value,
+                    laptopModel: document.getElementById('laptopModelInput').value,
+                    serialNumber: document.getElementById('serialNumber').value,
+                    faultDescription: document.getElementById('faultDescription').value,
+                    solveDate: document.getElementById('solveDate').value,
+                    status: document.getElementById('status').value,
+                    comment: document.getElementById('comment').value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (currentEditingIndex >= 0) {
+                    // 更新现有记录
+                    repairRecords[currentEditingIndex] = formData;
+                    // 更新Firebase
+                    updateRecordInFirebase(currentEditingIndex, formData);
+                    showNotification('记录已更新', 'success');
+                    
+                    // 重置编辑状态
+                    currentEditingIndex = -1;
+                    document.getElementById('addRecordBtn').innerHTML = '<i class="fa fa-plus-circle mr-2"></i>添加记录';
+                } else {
+                    // 添加新记录
+                    repairRecords.unshift(formData); // 添加到开头
+                    // 添加到Firebase
+                    addRecordToFirebase(formData);
+                    showNotification('记录已添加', 'success');
+                }
+                
+                // 保存到本地存储
+                saveRecordsToStorage();
+                // 保存到Firebase
+                saveRecordsToFirebase();
+                
+                // 更新界面
+                updateRecordsTable();
+                updateRecentRecords();
+                updatePaginationControls();
+                updateStatistics();
+                
+                // 重置表单（保留状态选择）
+                const statusValue = document.getElementById('status').value;
+                repairForm.reset();
+                document.getElementById('solveDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('status').value = statusValue;
+                
+                // 恢复状态选择器的选中状态
+                const statusPills = document.querySelectorAll('.status-pill');
+                statusPills.forEach(pill => {
+                    if (pill.dataset.status === statusValue) {
+                        pill.classList.add('status-pill-active');
+                    } else {
+                        pill.classList.remove('status-pill-active');
+                    }
+                });
+                
+                // 清空选中记录
+                selectedRecordIndices = [];
+                updateDeleteButtonState();
+                document.getElementById('editRecordBtn').disabled = true;
+                document.getElementById('editRecordBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            });
+            
+            // Excel导入事件
+            const excelFileInput = document.getElementById('excelFile');
+            excelFileInput.addEventListener('change', handleExcelImport);
+            
+            // Excel下载按钮事件
+            const downloadExcelBtn = document.getElementById('downloadExcelBtn');
+            downloadExcelBtn.addEventListener('click', downloadExcel);
+            
+            // 主题切换事件
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+        
+        // 初始化分页控件事件
+        function initPaginationEvents() {
+            // 上一页按钮
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (paginationConfig.currentPage > 1) {
+                    paginationConfig.currentPage--;
+                    updateRecordsTable();
+                    updatePaginationControls();
+                }
+            });
+            
+            // 下一页按钮
+            document.getElementById('nextPage').addEventListener('click', () => {
+                const totalPages = Math.ceil(repairRecords.length / paginationConfig.pageSize);
+                if (paginationConfig.currentPage < totalPages) {
+                    paginationConfig.currentPage++;
+                    updateRecordsTable();
+                    updatePaginationControls();
+                }
+            });
+        }
+        
+        // 加载记录从本地存储
+        function loadRecordsFromStorage() {
+            const savedRecords = localStorage.getItem('repairRecords');
+            if (savedRecords) {
+                try {
+                    repairRecords = JSON.parse(savedRecords);
+                    console.log(`从本地存储加载 ${repairRecords.length} 条记录`);
+                    updateRecordsTable();
+                    updateRecentRecords();
+                    updatePaginationControls();
+                    updateStatistics();
+                } catch (error) {
+                    console.error('加载本地记录失败:', error);
+                    repairRecords = [];
+                }
+            }
+        }
+        
+        // 保存记录到本地存储
+        function saveRecordsToStorage() {
+            localStorage.setItem('repairRecords', JSON.stringify(repairRecords));
+        }
+        
+        // 更新记录表格
+        function updateRecordsTable() {
+            const tableBody = document.getElementById('recordsTableBody');
+            const startIndex = (paginationConfig.currentPage - 1) * paginationConfig.pageSize;
+            const endIndex = Math.min(startIndex + paginationConfig.pageSize, repairRecords.length);
+            const currentPageRecords = repairRecords.slice(startIndex, endIndex);
+            
+            if (repairRecords.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400 italic">暂无记录，请添加维修记录</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tableBody.innerHTML = '';
+            
+            currentPageRecords.forEach((record, localIndex) => {
+                const globalIndex = startIndex + localIndex;
+                const isSelected = selectedRecordIndices.includes(globalIndex);
+                
+                const row = document.createElement('tr');
+                row.className = isSelected ? 'table-row-selected' : '';
+                row.dataset.index = globalIndex;
+                
+                // 添加点击事件
+                row.addEventListener('click', (e) => {
+                    const checkbox = row.querySelector('input[type="checkbox"]');
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        updateSelectedRecords();
+                    }
+                });
+                
+                // 状态样式映射
+                const statusClasses = {
+                    '已解决': 'bg-success/10 text-success border-success/30',
+                    '维修中': 'bg-statusRepairing/10 text-statusRepairing border-statusRepairing/30',
+                    '待配件': 'bg-statusWaiting/10 text-statusWaiting border-statusWaiting/30',
+                    '过保无法维修': 'bg-statusUnrepairable/10 text-statusUnrepairable border-statusUnrepairable/30'
+                };
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3">
+                        <input type="checkbox" class="record-checkbox" ${isSelected ? 'checked' : ''} 
+                               onchange="updateSelectedRecords()" 
+                               data-index="${globalIndex}">
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">${record.username || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${record.employeeId || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${record.email || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${record.laptopModel || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${record.serialNumber || '-'}</td>
+                    <td class="px-4 py-3">${record.faultDescription || '-'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${formatDate(record.solveDate) || '-'}</td>
+                    <td class="px-4 py-3">
+                        <span class="status-pill status-indicator ${statusClasses[record.status] || ''}" 
+                              onclick="editRecordStatus(${globalIndex}, this)">
+                            ${record.status || '已解决'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">${record.comment || '-'}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // 更新删除按钮状态
+            updateDeleteButtonState();
+            updateEditButtonState();
+        }
+        
+        // 编辑记录状态
+        function editRecordStatus(index, statusElement) {
+            const statuses = ['已解决', '维修中', '待配件', '过保无法维修'];
+            const currentStatus = repairRecords[index].status || '已解决';
+            const currentIndex = statuses.indexOf(currentStatus);
+            const nextIndex = (currentIndex + 1) % statuses.length;
+            const newStatus = statuses[nextIndex];
+            
+            // 更新记录
+            repairRecords[index].status = newStatus;
+            
+            // 更新状态样式
+            const statusClasses = {
+                '已解决': 'bg-success/10 text-success border-success/30',
+                '维修中': 'bg-statusRepairing/10 text-statusRepairing border-statusRepairing/30',
+                '待配件': 'bg-statusWaiting/10 text-statusWaiting border-statusWaiting/30',
+                '过保无法维修': 'bg-statusUnrepairable/10 text-statusUnrepairable border-statusUnrepairable/30'
+            };
+            
+            statusElement.className = `status-pill status-indicator ${statusClasses[newStatus]}`;
+            statusElement.textContent = newStatus;
+            
+            // 保存更改
+            saveRecordsToStorage();
+            saveRecordsToFirebase();
+            updateStatistics();
+            
+            showNotification(`状态已更新为：${newStatus}`, 'success');
+        }
+        
+        // 更新选中的记录
+        function updateSelectedRecords() {
+            const checkboxes = document.querySelectorAll('.record-checkbox');
+            selectedRecordIndices = [];
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedRecordIndices.push(parseInt(checkbox.dataset.index));
+                }
+            });
+            
+            // 更新行样式
+            document.querySelectorAll('#recordsTableBody tr').forEach(row => {
+                const index = parseInt(row.dataset.index);
+                if (selectedRecordIndices.includes(index)) {
+                    row.classList.add('table-row-selected');
+                } else {
+                    row.classList.remove('table-row-selected');
+                }
+            });
+            
+            // 更新按钮状态
+            updateDeleteButtonState();
+            updateEditButtonState();
+        }
+        
+        // 更新删除按钮状态
+        function updateDeleteButtonState() {
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            if (selectedRecordIndices.length > 0) {
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                deleteBtn.disabled = true;
+                deleteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        // 更新编辑按钮状态
+        function updateEditButtonState() {
+            const editBtn = document.getElementById('editRecordBtn');
+            if (selectedRecordIndices.length === 1) {
+                editBtn.disabled = false;
+                editBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                editBtn.disabled = true;
+                editBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        // 更新最近记录
+        function updateRecentRecords() {
+            const recentRecordsContainer = document.getElementById('recentRecords');
+            
+            if (repairRecords.length === 0) {
+                recentRecordsContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400 italic text-center py-4">暂无记录</p>';
+                return;
+            }
+            
+            // 显示最近的5条记录
+            const recentRecords = repairRecords.slice(0, 5);
+            recentRecordsContainer.innerHTML = '';
+            
+            recentRecords.forEach((record, index) => {
+                const recordCard = document.createElement('div');
+                recordCard.className = 'p-3 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow';
+                
+                recordCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-medium text-gray-800 dark:text-white">${record.username || '未知用户'}</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full ${getStatusClass(record.status)}">${record.status || '已解决'}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <i class="fa fa-laptop mr-1"></i>${record.laptopModel || '未知型号'}
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        <i class="fa fa-calendar mr-1"></i>${formatDate(record.solveDate) || '未知日期'}
+                    </div>
+                    <div class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                        <i class="fa fa-exclamation-circle mr-1"></i>${record.faultDescription || '无描述'}
+                    </div>
+                `;
+                
+                // 点击最近记录项选中对应行
+                recordCard.addEventListener('click', () => {
+                    // 滚动到表格
+                    document.getElementById('recordsTable').scrollIntoView({ behavior: 'smooth' });
+                    
+                    // 选中对应行
+                    selectedRecordIndices = [index];
+                    updateRecordsTable();
+                });
+                
+                recentRecordsContainer.appendChild(recordCard);
+            });
+        }
+        
+        // 获取状态样式类
+        function getStatusClass(status) {
+            const statusClasses = {
+                '已解决': 'bg-success/10 text-success',
+                '维修中': 'bg-statusRepairing/10 text-statusRepairing',
+                '待配件': 'bg-statusWaiting/10 text-statusWaiting',
+                '过保无法维修': 'bg-statusUnrepairable/10 text-statusUnrepairable'
+            };
+            return statusClasses[status] || 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300';
+        }
+        
+        // 更新分页控件
+        function updatePaginationControls() {
+            const paginationControls = document.getElementById('paginationControls');
+            const totalPages = Math.ceil(repairRecords.length / paginationConfig.pageSize);
+            const showingRange = document.getElementById('showingRange');
+            const totalRecords = document.getElementById('totalRecords');
+            const pageNumbers = document.getElementById('pageNumbers');
+            const prevPageBtn = document.getElementById('prevPage');
+            const nextPageBtn = document.getElementById('nextPage');
+            
+            if (repairRecords.length <= paginationConfig.pageSize) {
+                paginationControls.classList.add('hidden');
+                return;
+            }
+            
+            paginationControls.classList.remove('hidden');
+            
+            // 更新显示范围
+            const start = repairRecords.length === 0 ? 0 : (paginationConfig.currentPage - 1) * paginationConfig.pageSize + 1;
+            const end = Math.min(paginationConfig.currentPage * paginationConfig.pageSize, repairRecords.length);
+            showingRange.textContent = `${start}-${end}`;
+            totalRecords.textContent = repairRecords.length;
+            
+            // 更新页码按钮
+            pageNumbers.innerHTML = '';
+            
+            // 显示最多5个页码
+            let startPage = Math.max(1, paginationConfig.currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-item ${i === paginationConfig.currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    paginationConfig.currentPage = i;
+                    updateRecordsTable();
+                    updatePaginationControls();
+                });
+                pageNumbers.appendChild(pageBtn);
+            }
+            
+            // 更新上一页/下一页按钮状态
+            prevPageBtn.disabled = paginationConfig.currentPage === 1;
+            nextPageBtn.disabled = paginationConfig.currentPage === totalPages;
+            
+            if (prevPageBtn.disabled) {
+                prevPageBtn.classList.add('disabled', 'cursor-not-allowed');
+            } else {
+                prevPageBtn.classList.remove('disabled', 'cursor-not-allowed');
+            }
+            
+            if (nextPageBtn.disabled) {
+                nextPageBtn.classList.add('disabled', 'cursor-not-allowed');
+            } else {
+                nextPageBtn.classList.remove('disabled', 'cursor-not-allowed');
+            }
+        }
+        
+        // 处理Excel导入
+        function handleExcelImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // 假设第一个工作表包含数据
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // 转换为JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (jsonData.length > 0) {
+                        // 处理导入的数据
+                        const importedRecords = jsonData.map(item => {
+                            return {
+                                username: item['用户姓名'] || item.username || '',
+                                employeeId: item['工号'] || item.employeeId || '',
+                                email: item['邮箱'] || item.email || '',
+                                laptopModel: item['笔记本型号'] || item.laptopModel || '',
+                                serialNumber: item['序列号'] || item.serialNumber || '',
+                                faultDescription: item['故障描述'] || item.faultDescription || '',
+                                solveDate: item['问题解决日期'] || item.solveDate || '',
+                                status: item['状态'] || item.status || '已解决',
+                                comment: item['备注'] || item.comment || '',
+                                timestamp: new Date().toISOString()
+                            };
+                        });
+                        
+                        // 将导入的记录添加到现有记录之前
+                        repairRecords = [...importedRecords, ...repairRecords];
+                        
+                        // 保存到本地存储
+                        saveRecordsToStorage();
+                        // 保存到Firebase
+                        saveRecordsToFirebase();
+                        
+                        // 更新界面
+                        updateRecordsTable();
+                        updateRecentRecords();
+                        updatePaginationControls();
+                        updateStatistics();
+                        
+                        showNotification(`成功导入 ${importedRecords.length} 条记录`, 'success');
+                    } else {
+                        showNotification('Excel文件中没有数据', 'warning');
+                    }
+                } catch (error) {
+                    console.error('导入Excel失败:', error);
+                    showNotification('导入Excel失败，请检查文件格式', 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // 下载Excel文件
+        function downloadExcel() {
+            if (repairRecords.length === 0) {
+                showNotification('没有记录可导出', 'warning');
+                return;
+            }
+            
+            // 准备Excel数据
+            const excelData = repairRecords.map(record => {
+                return {
+                    '用户姓名': record.username || '',
+                    '工号': record.employeeId || '',
+                    '邮箱': record.email || '',
+                    '笔记本型号': record.laptopModel || '',
+                    '序列号': record.serialNumber || '',
+                    '故障描述': record.faultDescription || '',
+                    '问题解决日期': formatDate(record.solveDate) || '',
+                    '状态': record.status || '已解决',
+                    '备注': record.comment || ''
+                };
+            });
+            
+            // 创建工作簿和工作表
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, '维修记录');
+            
+            // 生成Excel文件并下载
+            const excelFileName = `笔记本维修记录_${formatDateForFileName(new Date())}.xlsx`;
+            XLSX.writeFile(workbook, excelFileName);
+            
+            showNotification(`Excel文件已下载: ${excelFileName}`, 'success');
+        }
+        
+        // 格式化日期
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-CN', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit' 
+            });
+        }
+        
+        // 为文件名格式化日期
+        function formatDateForFileName(date) {
+            return `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}_${date.getHours().toString().padStart(2, '0')}${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'info', errorCode = '') {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            
+            // 设置通知样式和图标
+            const iconClasses = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            const bgColors = {
+                success: 'bg-success',
+                error: 'bg-danger',
+                warning: 'bg-yellow-500',
+                info: 'bg-primary'
+            };
+            
+            notification.className = `fixed top-4 right-4 ${bgColors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center z-50 slide-in`;
+            notification.style.transition = 'all 0.3s ease';
+            
+            // 添加错误代码（如果有）
+            const errorCodeText = errorCode ? `<div class="text-xs opacity-80 mt-1">错误代码: ${errorCode}</div>` : '';
+            
+            notification.innerHTML = `
+                <i class="fa ${iconClasses[type]} mr-3 text-xl"></i>
+                <div>
+                    <div>${message}</div>
+                    ${errorCodeText}
+                </div>
+                <button class="ml-4 text-white hover:text-gray-200" onclick="this.parentElement.remove()">
+                    <i class="fa fa-times"></i>
+                </button>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(notification);
+            
+            // 自动移除
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+        
+        // 初始化主题模式
+        function initThemeMode() {
+            // 检查用户偏好
+            const isDarkMode = localStorage.getItem('darkMode') === 'true' || 
+                              (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && 
+                               localStorage.getItem('darkMode') !== 'false');
+            
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+        
+        // 切换主题
+        function toggleTheme() {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDarkMode);
+            
+            showNotification(`已切换到${isDarkMode ? '深色' : '浅色'}模式`, 'success');
+        }
+        
+        // 初始化标题文字跳动动画
+        function initTitleAnimation() {
+            const titleElement = document.getElementById('animatedTitle');
+            if (!titleElement) return;
+            
+            const text = titleElement.textContent.trim();
+            const iconHTML = titleElement.innerHTML.split('<span>')[0];
+            
+            // 清空标题
+            titleElement.innerHTML = iconHTML;
+            
+            // 创建span元素包装每个字符
+            const spanContainer = document.createElement('span');
+            
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === ' ') {
+                    spanContainer.innerHTML += '&nbsp;';
+                    continue;
+                }
+                const span = document.createElement('span');
+                span.className = 'title-char';
+                span.style.animationDelay = `${i * 0.05}s`;
+                span.textContent = text[i];
+                spanContainer.appendChild(span);
+            }
+            
+            titleElement.appendChild(spanContainer);
+        }
+    </script>
+</body>
+</html>
